@@ -11,7 +11,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import npe.arcade.ArcadeMod;
 import npe.arcade.items.Items;
 import npe.arcade.tileentities.TileEntityArcade;
 import cpw.mods.fml.relauncher.Side;
@@ -22,7 +21,6 @@ public class BlockArcade extends BlockContainer {
     public BlockArcade(int id) {
         super(id, Material.iron);
         setHardness(2f);
-        setCreativeTab(ArcadeMod.CREATIVE_TAB);
         setStepSound(Block.soundMetalFootstep);
         setUnlocalizedName(BlockInfo.ARCADE_UNLOCALIZED_NAME);
     }
@@ -34,7 +32,7 @@ public class BlockArcade extends BlockContainer {
 
     @Override
     public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
-        ArrayList<ItemStack> list = new ArrayList<>(1);
+        ArrayList<ItemStack> list = new ArrayList<ItemStack>(1);
         list.add(new ItemStack(Items.arcade));
         return list;
     }
