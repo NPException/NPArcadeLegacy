@@ -1,9 +1,9 @@
 package npe.arcade.proxies;
 
-import npe.arcade.client.ModelArcade;
+import npe.arcade.client.Models;
 import npe.arcade.client.RenderArcade;
-import npe.arcade.entities.EntityArcade;
-import cpw.mods.fml.client.registry.RenderingRegistry;
+import npe.arcade.tileentities.TileEntityArcade;
+import cpw.mods.fml.client.registry.ClientRegistry;
 
 public class ClientProxy extends CommonProxy {
     @Override
@@ -13,9 +13,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void initRenderers() {
-        ModelArcade model = new ModelArcade();
-        RenderingRegistry.registerEntityRenderingHandler(EntityArcade.class, new RenderArcade(model));
-        // TODO:
-        //MinecraftForgeClient.registerItemRenderer(ItemInfo.ARCADE_ID + 256, new RenderArcadeItem(model));
+        Models.initModels();
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcade.class, new RenderArcade());
+        //MinecraftForgeClient.registerItemRenderer(BlockInfo.ARCADE_ID, new RenderArcade());
     }
 }

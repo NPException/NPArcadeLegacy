@@ -3,8 +3,8 @@ package npe.arcade;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import npe.arcade.blocks.Blocks;
 import npe.arcade.config.ConfigHandler;
-import npe.arcade.entities.Entities;
 import npe.arcade.items.Items;
 import npe.arcade.network.PacketHandler;
 import npe.arcade.proxies.CommonProxy;
@@ -36,6 +36,7 @@ public class ArcadeMod {
     public void preInit(FMLPreInitializationEvent event) {
         ConfigHandler.init(event.getSuggestedConfigurationFile());
         Items.init();
+        Blocks.init();
 
         proxy.initSounds();
         proxy.initRenderers();
@@ -51,7 +52,9 @@ public class ArcadeMod {
         Items.addNames();
         Items.registerRecipes();
 
-        Entities.init();
+        Blocks.addNames();
+        Blocks.registerTileEntities();
+        //Entities.init();
     }
 
     /**
