@@ -1,6 +1,5 @@
 package npe.arcade;
 
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import npe.arcade.blocks.Blocks;
@@ -70,7 +69,7 @@ public class ArcadeMod {
     public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("npe.arcade.tab") {
         @Override
         public ItemStack getIconItemStack() {
-            return new ItemStack(Block.hopperBlock);
+            return new ItemStack(Items.arcade);
         }
     };
 }
