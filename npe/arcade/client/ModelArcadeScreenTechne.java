@@ -26,7 +26,7 @@ public class ModelArcadeScreenTechne extends ModelBase
         Screen.setRotationPoint(0F, 8F, -2.0F);
         Screen.setTextureSize(256 / scale, 256 / scale);
         Screen.mirror = true;
-        setRotation(Screen, -0.5F, 0F, 0F);
+        setRotation(Screen, -0.5323254F, 0F, 0F);
     }
 
     @Override

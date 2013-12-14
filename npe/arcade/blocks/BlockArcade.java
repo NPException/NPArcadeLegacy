@@ -9,7 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import npe.arcade.ArcadeMod;
 import npe.arcade.items.Items;
 import npe.arcade.tileentities.TileEntityArcade;
 import cpw.mods.fml.relauncher.Side;
@@ -20,6 +22,7 @@ public class BlockArcade extends BlockContainer {
     public BlockArcade(int id) {
         super(id, Material.iron);
         setHardness(2f);
+        setCreativeTab(ArcadeMod.CREATIVE_TAB);
         setStepSound(Block.soundMetalFootstep);
         setUnlocalizedName(BlockInfo.ARCADE_UNLOCALIZED_NAME);
     }
@@ -69,6 +72,16 @@ public class BlockArcade extends BlockContainer {
     @Override
     public boolean isOpaqueCube() {
         return false;
+    }
+
+    @Override
+    public int getLightValue(IBlockAccess world, int x, int y, int z) {
+        if (isTopPart(world.getBlockMetadata(x, y, z))) {
+            return 6;
+        }
+        else {
+            return 0;
+        }
     }
 
     @Override
