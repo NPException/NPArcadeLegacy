@@ -17,6 +17,7 @@ public class ModelArcadeTechne extends ModelBase
     //fields
     ModelRenderer Base;
     ModelRenderer Backwall;
+    ModelRenderer GlassPane;
     ModelRenderer Top_Bar;
     ModelRenderer SideR1;
     ModelRenderer SideR2;
@@ -44,6 +45,12 @@ public class ModelArcadeTechne extends ModelBase
         Base.setTextureSize(128, 128);
         Base.mirror = true;
         setRotation(Base, 0F, 0F, 0F);
+        GlassPane = new ModelRenderer(this, 0, 70);
+        GlassPane.addBox(-6F, -17F, 0F, 12, 17, 0);
+        GlassPane.setRotationPoint(0F, 8F, -3F);
+        GlassPane.setTextureSize(128, 128);
+        GlassPane.mirror = true;
+        setRotation(GlassPane, -0.5F, 0F, 0F);
         Backwall = new ModelRenderer(this, 0, 40);
         Backwall.addBox(0F, 0F, 0F, 16, 16, 2);
         Backwall.setRotationPoint(-8F, -8F, 6F);
@@ -144,6 +151,8 @@ public class ModelArcadeTechne extends ModelBase
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
         if (isTopPart) {
+            //GlassPane.render(f5);
+
             Backwall.render(f5);
             Top_Bar.render(f5);
             SideR1.render(f5);

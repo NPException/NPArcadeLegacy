@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -12,25 +13,46 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import npe.arcade.blocks.BlockArcade;
+import npe.arcade.interfaces.IArcadeMachine;
 
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityArcade extends TileEntity {
+public class TileEntityArcade extends TileEntity implements IArcadeMachine {
+
+    // FIXME: TAKE CARE OF CHECKING isTopPart() EVERYWHERE AS NEEDED!
+    // Only the top part of the arcade machine should do the game handling, as it is the only one who renders the screen.
+    // TODO: Check if redirects to the top part may be necessarya anywhere
+
+    private static BufferedImage frame;
 
     private int glTextureId = -1;
-    private static BufferedImage frame;
+    private int facing = -1;
+    // 0 will indicate false, everything else indicates true. (just like C)
+    private int isTop = -1;
+
     private final BufferedImage screen;
     public boolean isImageChanged = true;
+
+    /*
+     * Values that need synchronization with the server
+     */
+
+    private int damage = 0;
+    private boolean occupied;
 
     // TODO: remove me, I'm temporary
     public Color backgroundColor = Color.DARK_GRAY.darker().darker();
 
+    /**
+     * Constructor
+     */
     public TileEntityArcade() {
         InputStream inputstream = null;
         if (frame == null) {
@@ -65,30 +87,20 @@ public class TileEntityArcade extends TileEntity {
         g.drawImage(frame, 0, 0, null);
     }
 
-    public boolean isTopPart() {
-        return (BlockArcade.isTopPart(getBlockMetadata()));
-    }
-
-    public int getFacing() {
-        return (BlockArcade.getFacing(getBlockMetadata()));
-    }
-
-    public int getGlTextureId()
-    {
-        if (glTextureId == -1) {
-            glTextureId = TextureUtil.glGenTextures();
-        }
-        return glTextureId;
-    }
-
-    public BufferedImage getScreenImage() {
-        return screen;
+    public void hitByPlayer(EntityPlayer player) {
+        damage++;
     }
 
     private int tickcounter = 0;
 
     @Override
     public void updateEntity() {
+        if (!isTopPart()) {
+            return;
+        }
+
+        // game.doGameTick();
+        // screen.setRGB(0, 0, 96, 128, game.renderGraphics(), 0, 96);
 
         if (tickcounter == 0 || tickcounter == 10) {
             Color color = Color.WHITE;
@@ -109,10 +121,53 @@ public class TileEntityArcade extends TileEntity {
         }
     }
 
+    @Override
+    public void playSound(File soundFile) {
+        // TODO: play given soundFile
+    }
+
+    @Override
+    public void fail(boolean hcf) {
+        // TODO: display some error screen
+        if (hcf || damage > 50) {
+            // TODO: catch fire
+        }
+    }
+
+    /*
+     * Getter and convenience methods
+     */
+
+    public boolean isTopPart() {
+        if (isTop == -1) {
+            isTop = BlockArcade.isTopPart(getBlockMetadata()) ? 1 : 0;
+        }
+        return isTop != 0;
+    }
+
+    public int getFacing() {
+        if (facing == -1) {
+            facing = BlockArcade.getFacing(getBlockMetadata());
+        }
+        return facing;
+    }
+
+    public int getGlTextureId()
+    {
+        if (glTextureId == -1) {
+            glTextureId = TextureUtil.glGenTextures();
+        }
+        return glTextureId;
+    }
+
+    public BufferedImage getScreenImage() {
+        return screen;
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public double getMaxRenderDistanceSquared() {
-        // TODO Auto-generated method stub
+        // TODO: make configurable
         return 9216.0d;
     }
 

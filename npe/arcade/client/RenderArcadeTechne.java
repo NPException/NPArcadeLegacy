@@ -60,7 +60,6 @@ public class RenderArcadeTechne extends TileEntitySpecialRenderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, arcade.getGlTextureId());
 
             GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_BLEND);
             Tessellator.instance.setColorOpaque_F(1f, 1f, 1f);
             OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 0f, 240f);
             modelScreen.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);

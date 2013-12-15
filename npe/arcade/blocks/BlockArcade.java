@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -75,11 +78,24 @@ public class BlockArcade extends BlockContainer {
     @Override
     public int getLightValue(IBlockAccess world, int x, int y, int z) {
         if (isTopPart(world.getBlockMetadata(x, y, z))) {
-            return 6;
+            return 10;
         }
         else {
             return 0;
         }
+    }
+
+    @Override
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+        ((TileEntityArcade)world.getBlockTileEntity(x, y, z)).hitByPlayer(player);
+    }
+
+    public static boolean isTopPart(int meta) {
+        return (meta & 8) > 1;
+    }
+
+    public static int getFacing(int meta) {
+        return meta & 7;
     }
 
     @Override
@@ -100,55 +116,43 @@ public class BlockArcade extends BlockContainer {
 
     @Override
     public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        setBlockBoundsBasedOnState(world, x, y, z);
-        return super.getCollisionBoundingBoxFromPool(world, x, y, z);
-    }
-
-    @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
-
         int meta = world.getBlockMetadata(x, y, z);
         if (!isTopPart(meta)) {
-            setBlockBounds(0, 0, 0, 1, 1, 1);
-            return;
+            return super.getCollisionBoundingBoxFromPool(world, x, y, z);
         }
 
+        float[] bounds = { 0f, 0f, 0f, 1f, 1f, 1f };
+
+        // changing parts of the bounding box depending on the facing
         switch (getFacing(meta)) {
 
             case 0: {
-                setBlockBounds(0, 0, 0, 1, 1, 0.375f);
+                bounds[5] = 0.375f;
                 break;
             }
 
             case 1: {
-
-                setBlockBounds(0.625f, 0, 0, 1f, 1, 1);
+                bounds[0] = 0.625f;
                 break;
             }
 
             case 2: {
-                setBlockBounds(0, 0, 0.625f, 1, 1, 1);
+                bounds[2] = 0.625f;
                 break;
             }
 
             case 3: {
-                setBlockBounds(0, 0, 0, 0.375f, 1, 1);
-                break;
-            }
-
-            default: {
-
-                setBlockBounds(0, 0, 0, 1, 1, 1);
+                bounds[3] = 0.375f;
                 break;
             }
         }
+
+        AxisAlignedBB blockbounds = AxisAlignedBB.getAABBPool().getAABB(x + bounds[0], y + bounds[1], z + bounds[2], x + bounds[3], y + bounds[4], z + bounds[5]);
+        return blockbounds;
     }
 
-    public static boolean isTopPart(int meta) {
-        return (meta & 8) > 1;
-    }
-
-    public static int getFacing(int meta) {
-        return meta & 7;
+    @Override
+    public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3) {
+        return super.collisionRayTrace(par1World, par2, par3, par4, par5Vec3, par6Vec3);
     }
 }

@@ -32,6 +32,7 @@ public class ItemArcade extends Item {
             ForgeDirection direction = ForgeDirection.getOrientation(side);
             if (world.isAirBlock(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ) && world.isAirBlock(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ)) {
 
+                // TODO: check if the player is in the way
                 if (world.setBlock(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_ID)) {
                     world.setBlock(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_ID);
 
