@@ -95,7 +95,53 @@ public class BlockArcade extends BlockContainer {
             customMinY--;
             customMaxY--;
         }
-        return AxisAlignedBB.getAABBPool().getAABB(x + minX, y + customMinY, z + minZ, x + maxX, y + customMaxY, z + maxZ);
+        return AxisAlignedBB.getAABBPool().getAABB(x, y + customMinY, z, x + 1, y + customMaxY, z + 1);
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        setBlockBoundsBasedOnState(world, x, y, z);
+        return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+    }
+
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+
+        int meta = world.getBlockMetadata(x, y, z);
+        if (!isTopPart(meta)) {
+            setBlockBounds(0, 0, 0, 1, 1, 1);
+            return;
+        }
+
+        switch (getFacing(meta)) {
+
+            case 0: {
+                setBlockBounds(0, 0, 0, 1, 1, 0.375f);
+                break;
+            }
+
+            case 1: {
+
+                setBlockBounds(0.625f, 0, 0, 1f, 1, 1);
+                break;
+            }
+
+            case 2: {
+                setBlockBounds(0, 0, 0.625f, 1, 1, 1);
+                break;
+            }
+
+            case 3: {
+                setBlockBounds(0, 0, 0, 0.375f, 1, 1);
+                break;
+            }
+
+            default: {
+
+                setBlockBounds(0, 0, 0, 1, 1, 1);
+                break;
+            }
+        }
     }
 
     public static boolean isTopPart(int meta) {

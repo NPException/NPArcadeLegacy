@@ -3,6 +3,7 @@ package npe.arcade.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -17,13 +18,16 @@ public class RenderArcadeTechne extends TileEntitySpecialRenderer {
     private final ModelArcadeTechne modelBody;
     private final ModelArcadeScreenTechne modelScreen;
     private final ResourceLocation textureBody;
-    private final ResourceLocation textureScreen;
 
     public RenderArcadeTechne() {
         modelBody = new ModelArcadeTechne();
         textureBody = new ResourceLocation("npearcade:textures/models/arcadeTechne.png");
         modelScreen = new ModelArcadeScreenTechne();
-        textureScreen = new ResourceLocation("npearcade:textures/models/arcadeScreenTechne.png");
+    }
+
+    @Override
+    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float scale) {
+        render((TileEntityArcade)te, x, y, z, scale);
     }
 
     private void render(TileEntityArcade arcade, double x, double y, double z, float scale) {
@@ -48,8 +52,12 @@ public class RenderArcadeTechne extends TileEntitySpecialRenderer {
         modelBody.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
         if (modelBody.isTopPart) {
+            if (arcade.isImageChanged) {
+                TextureUtil.uploadTextureImageAllocate(arcade.getGlTextureId(), arcade.getScreenImage(), false, false);
+                arcade.isImageChanged = false;
+            }
             // SCREEN RENDERING PART //
-            Minecraft.getMinecraft().renderEngine.bindTexture(textureScreen);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, arcade.getGlTextureId());
 
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_BLEND);
@@ -63,19 +71,4 @@ public class RenderArcadeTechne extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    @Override
-    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float scale) {
-        render((TileEntityArcade)te, x, y, z, scale);
-    }
-
-    //    //Set the lighting stuff, so it changes it's brightness properly.       
-    //    private void adjustLightFixture(World world, int i, int j, int k, Block block) {
-    //        Tessellator tess = Tessellator.instance;
-    //        float brightness = block.getBlockBrightness(world, i, j, k);
-    //        int skyLight = world.getLightBrightnessForSkyBlocks(i, j, k, 0);
-    //        int modulousModifier = skyLight % 65536;
-    //        int divModifier = skyLight / 65536;
-    //        tess.setColorOpaque_F(brightness, brightness, brightness);
-    //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, modulousModifier, divModifier);
-    //    }
 }

@@ -18,15 +18,15 @@ public class ModelArcadeScreenTechne extends ModelBase
 
     public ModelArcadeScreenTechne()
     {
-        textureWidth = 256 / scale;
-        textureHeight = 256 / scale;
+        textureWidth = 128 / scale;
+        textureHeight = 128 / scale;
 
         Screen = new ModelRenderer(this, 0, 0);
-        Screen.addBox(-6F, -16F, 0F, 12, 16, 1);
+        Screen.addBox(-6F, -16F, 0F, 12, 16, 0);
         Screen.setRotationPoint(0F, 8F, -2.0F);
-        Screen.setTextureSize(256 / scale, 256 / scale);
+        Screen.setTextureSize(128 / scale, 128 / scale);
         Screen.mirror = true;
-        setRotation(Screen, -0.5323254F, 0F, 0F);
+        setRotation(Screen, -0.5F, 0F, 0F);
     }
 
     @Override
@@ -49,5 +49,4 @@ public class ModelArcadeScreenTechne extends ModelBase
     {
         super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     }
-
 }
