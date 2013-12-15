@@ -12,16 +12,19 @@ import npe.arcade.tileentities.TileEntityArcade;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class RenderArcadeTop extends TileEntitySpecialRenderer {
 
     //The model of your block
     private final ModelArcadeTop modelTop;
     private final ModelArcadeScreen modelScreen;
-    private final ResourceLocation textureTop;
+    private static final ResourceLocation textureTop = new ResourceLocation("npearcade:textures/models/arcade.png");
 
     public RenderArcadeTop() {
         modelTop = new ModelArcadeTop();
-        textureTop = new ResourceLocation("npearcade:textures/models/arcade.png");
         modelScreen = new ModelArcadeScreen();
     }
 
@@ -45,15 +48,11 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         // the model included the base before, and the top part is still shifted 1 up
         GL11.glTranslatef(0f, 1f, 0f);
 
-        // RENDER CASING
-        Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
-        modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-
+        // SCREEN RENDERING //
         if (arcade.isImageChanged) {
             TextureUtil.uploadTextureImageAllocate(arcade.getGlTextureId(), arcade.getScreenImage(), false, false);
             arcade.isImageChanged = false;
         }
-        // SCREEN RENDERING PART //
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, arcade.getGlTextureId());
 
         GL11.glDisable(GL11.GL_LIGHTING);
@@ -61,6 +60,10 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 0f, 240f);
         modelScreen.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
         GL11.glEnable(GL11.GL_LIGHTING);
+
+        // RENDER CASING //
+        Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
+        modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
         GL11.glPopMatrix();
         GL11.glPopMatrix();

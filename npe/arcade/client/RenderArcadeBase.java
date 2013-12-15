@@ -9,14 +9,17 @@ import npe.arcade.tileentities.TileEntityArcadeBase;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class RenderArcadeBase extends TileEntitySpecialRenderer {
 
     private final ModelArcadeBase model;
-    private final ResourceLocation texture;
+    private static final ResourceLocation texture = new ResourceLocation("npearcade:textures/models/arcade.png");
 
     public RenderArcadeBase() {
         model = new ModelArcadeBase();
-        texture = new ResourceLocation("npearcade:textures/models/arcade.png");
     }
 
     @Override
