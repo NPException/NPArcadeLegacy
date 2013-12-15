@@ -33,15 +33,15 @@ public class ItemArcade extends Item {
             if (world.isAirBlock(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ) && world.isAirBlock(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ)) {
 
                 // TODO: check if the player is in the way
-                if (world.setBlock(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_ID)) {
-                    world.setBlock(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_ID);
+                if (world.setBlock(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_BASE_ID)) {
+                    world.setBlock(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ, BlockInfo.ARCADE_TOP_ID);
 
                     int whichDirectionFacing = MathHelper
                             .floor_double(player.rotationYaw * 4.0F / 360.0F + 2.5D) & 3;
-                    // set the facing as metadata to the bottom block
+                    // set the facing as metadata to the blocks
                     world.setBlockMetadataWithNotify(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, whichDirectionFacing, 3);
-                    // set the state of being the top block in the metadatas high bit -> 8 = 1000b
-                    world.setBlockMetadataWithNotify(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ, whichDirectionFacing + 8, 3);
+                    world.setBlockMetadataWithNotify(x + direction.offsetX, y + 1 + direction.offsetY, z + direction.offsetZ, whichDirectionFacing, 3);
+
                     if (!player.capabilities.isCreativeMode) {
                         stack.stackSize--;
                     }

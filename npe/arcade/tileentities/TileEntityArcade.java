@@ -13,10 +13,10 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
+import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import npe.arcade.blocks.BlockArcade;
 import npe.arcade.interfaces.IArcadeMachine;
 
 import org.lwjgl.opengl.GL11;
@@ -26,19 +26,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
-    // FIXME: TAKE CARE OF CHECKING isTopPart() EVERYWHERE AS NEEDED!
-    // Only the top part of the arcade machine should do the game handling, as it is the only one who renders the screen.
-    // TODO: Check if redirects to the top part may be necessarya anywhere
-
     private static BufferedImage frame;
 
+    private static final int DAMAGE_WATCH_ID = 0;
+
     private int glTextureId = -1;
-    private int facing = -1;
-    // 0 will indicate false, everything else indicates true. (just like C)
-    private int isTop = -1;
 
     private final BufferedImage screen;
     public boolean isImageChanged = true;
+
+    private final DataWatcher datawatcher;
 
     /*
      * Values that need synchronization with the server
@@ -54,6 +51,9 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
      * Constructor
      */
     public TileEntityArcade() {
+        datawatcher = new DataWatcher();
+        dataWatcherInit();
+
         InputStream inputstream = null;
         if (frame == null) {
             try
@@ -87,6 +87,10 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         g.drawImage(frame, 0, 0, null);
     }
 
+    private void dataWatcherInit() {
+        datawatcher.addObject(DAMAGE_WATCH_ID, (byte)0);
+    }
+
     public void hitByPlayer(EntityPlayer player) {
         damage++;
     }
@@ -95,29 +99,27 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     @Override
     public void updateEntity() {
-        if (!isTopPart()) {
-            return;
-        }
+        if (getWorldObj().isRemote) {
+            // game.doGameTick();
+            // screen.setRGB(0, 0, 96, 128, game.renderGraphics(), 0, 96);
 
-        // game.doGameTick();
-        // screen.setRGB(0, 0, 96, 128, game.renderGraphics(), 0, 96);
-
-        if (tickcounter == 0 || tickcounter == 10) {
-            Color color = Color.WHITE;
-            if (tickcounter == 10) {
-                color = backgroundColor;
+            if (tickcounter == 0 || tickcounter == 10) {
+                Color color = Color.WHITE;
+                if (tickcounter == 10) {
+                    color = backgroundColor;
+                }
+                Graphics2D g = (Graphics2D)screen.getGraphics();
+                g.setColor(color);
+                g.fillRect(10, 10, 4, 6);
+                g.drawImage(frame, 0, 0, null);
+                isImageChanged = true;
             }
-            Graphics2D g = (Graphics2D)screen.getGraphics();
-            g.setColor(color);
-            g.fillRect(10, 10, 4, 6);
-            g.drawImage(frame, 0, 0, null);
-            isImageChanged = true;
-        }
 
-        // update tickcounter
-        tickcounter++;
-        if (tickcounter > 20) {
-            tickcounter = 0;
+            // update tickcounter
+            tickcounter++;
+            if (tickcounter > 20) {
+                tickcounter = 0;
+            }
         }
     }
 
@@ -137,20 +139,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     /*
      * Getter and convenience methods
      */
-
-    public boolean isTopPart() {
-        if (isTop == -1) {
-            isTop = BlockArcade.isTopPart(getBlockMetadata()) ? 1 : 0;
-        }
-        return isTop != 0;
-    }
-
-    public int getFacing() {
-        if (facing == -1) {
-            facing = BlockArcade.getFacing(getBlockMetadata());
-        }
-        return facing;
-    }
 
     public int getGlTextureId()
     {

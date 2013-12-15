@@ -7,15 +7,20 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class Blocks {
 
-    public static Block arcade;
+    public static Block arcadeBase;
+    public static Block arcadeTop;
 
     public static void init() {
-        arcade = new BlockArcade(BlockInfo.ARCADE_ID);
-        GameRegistry.registerBlock(arcade, BlockInfo.ARCADE_KEY);
+        arcadeBase = new BlockArcadeBase(BlockInfo.ARCADE_BASE_ID);
+        GameRegistry.registerBlock(arcadeBase, BlockInfo.ARCADE_BASE_KEY);
+
+        arcadeTop = new BlockArcadeTop(BlockInfo.ARCADE_TOP_ID);
+        GameRegistry.registerBlock(arcadeTop, BlockInfo.ARCADE_TOP_KEY);
     }
 
     public static void addNames() {
-        LanguageRegistry.addName(arcade, BlockInfo.ARCADE_NAME);
+        LanguageRegistry.addName(arcadeBase, BlockInfo.ARCADE_NAME);
+        LanguageRegistry.addName(arcadeTop, BlockInfo.ARCADE_NAME);
     }
 
     public static void registerTileEntities() {

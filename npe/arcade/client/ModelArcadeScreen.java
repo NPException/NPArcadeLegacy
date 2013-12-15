@@ -10,13 +10,13 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
-public class ModelArcadeScreenTechne extends ModelBase
+public class ModelArcadeScreen extends ModelBase
 {
     //fields
     ModelRenderer Screen;
     private final int scale = 8;
 
-    public ModelArcadeScreenTechne()
+    public ModelArcadeScreen()
     {
         textureWidth = 128 / scale;
         textureHeight = 128 / scale;

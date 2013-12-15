@@ -21,12 +21,12 @@ public class Items {
     public static void registerRecipes() {
         GameRegistry.addRecipe(new ItemStack(arcade),
                 new Object[] { //
-                " ii", //
+                "ii ", //
                 "idg", //
                 "ixi", //
                 'i', Item.ingotIron, //
                 'd', Item.diamond, //
-                'g', Block.thinGlass, //
+                'g', Item.comparator, //
                 'x', Block.blockRedstone
                 });
     }

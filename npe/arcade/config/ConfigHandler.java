@@ -13,7 +13,8 @@ public class ConfigHandler {
 
         // init config stuff
         ItemInfo.ARCADE_ID = config.getItem(ItemInfo.ARCADE_KEY, ItemInfo.ARCADE_DEFAULT).getInt() - 256;
-        BlockInfo.ARCADE_ID = config.getBlock(BlockInfo.ARCADE_KEY, BlockInfo.ARCADE_DEFAULT_ID).getInt();
+        BlockInfo.ARCADE_BASE_ID = config.getBlock(BlockInfo.ARCADE_BASE_KEY, BlockInfo.ARCADE_BASE_DEFAULT_ID).getInt();
+        BlockInfo.ARCADE_TOP_ID = config.getBlock(BlockInfo.ARCADE_TOP_KEY, BlockInfo.ARCADE_TOP_DEFAULT_ID).getInt();
 
         config.save();
     }
