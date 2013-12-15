@@ -141,8 +141,6 @@ public class ModelArcadeTop extends ModelBase {
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-        //GlassPane.render(f5);
-
         Backwall.render(f5);
         Top_Bar.render(f5);
         SideR1.render(f5);
@@ -158,6 +156,9 @@ public class ModelArcadeTop extends ModelBase {
         Button3.render(f5);
         Button4.render(f5);
         Stick.render(f5);
+
+        // TODO: Make configureable
+        GlassPane.render(f5);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z)

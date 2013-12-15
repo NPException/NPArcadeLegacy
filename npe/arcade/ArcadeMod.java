@@ -4,6 +4,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import npe.arcade.blocks.Blocks;
 import npe.arcade.config.ConfigHandler;
+import npe.arcade.entities.Entities;
 import npe.arcade.items.Items;
 import npe.arcade.network.PacketHandler;
 import npe.arcade.proxies.CommonProxy;
@@ -15,6 +16,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = ModInfo.MOD_ID, name = ModInfo.NAME, version = ModInfo.VERSION)
 @NetworkMod(channels = { ModInfo.CHANNEL }, clientSideRequired = true, serverSideRequired = true, packetHandler = PacketHandler.class)
@@ -53,7 +55,9 @@ public class ArcadeMod {
 
         Blocks.addNames();
         Blocks.registerTileEntities();
-        //Entities.init();
+        Entities.init();
+
+        LanguageRegistry.instance().addStringLocalization("itemGroup.npe.arcade.tab", ModInfo.NAME);
     }
 
     /**

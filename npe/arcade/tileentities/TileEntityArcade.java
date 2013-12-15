@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
 import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import npe.arcade.interfaces.IArcadeMachine;
@@ -165,4 +166,10 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
             GL11.glDeleteTextures(glTextureId);
         }
     }
+
+    @Override
+    public void writeToNBT(NBTTagCompound par1nbtTagCompound) {}
+
+    @Override
+    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {}
 }

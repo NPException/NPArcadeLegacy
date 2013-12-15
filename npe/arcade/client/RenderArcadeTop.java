@@ -34,9 +34,11 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
     }
 
     private void render(TileEntityArcade arcade, double x, double y, double z, float scale) {
-        GL11.glColor4f(1f, 1f, 1f, 1f);
+
         //The PushMatrix tells the renderer to "start" doing something.
         GL11.glPushMatrix();
+
+        GL11.glColor4f(1f, 1f, 1f, 1f);
         //This is setting the initial location.
         GL11.glTranslatef((float)x + 0.5F, (float)y + 1.5F, (float)z + 0.5F);
 
@@ -62,9 +64,11 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         GL11.glEnable(GL11.GL_LIGHTING);
 
         // RENDER CASING //
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
         modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-
+        GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
         GL11.glPopMatrix();
     }

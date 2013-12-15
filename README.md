@@ -10,7 +10,7 @@ TODO:
 - leaderboards? (send player name to game)
 - count amount of damage to increase possibility of failing
 - fillWithRain(world, x, y, z) -> increase damage if it stands in the rain for too long
-- on high damage: distort picture (white noise), miss inputs
+- on high damage: distort picture (white noise, but only apply on clientSide), miss inputs
 - (make it as configurable as possible - render distance and screen receiving distance f.e.)
 - make more parts, so you actually need to craft the arcade piece by piece. should be more or less expensive
 - make arcade machines dungeonloot

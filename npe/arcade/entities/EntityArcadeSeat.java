@@ -18,6 +18,7 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnData {
 
     public final float placementRotation;
+    private Entity lastRiddenByEntity;
 
     public EntityArcadeSeat(World world) {
         super(world);
@@ -59,6 +60,27 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
 
     @Override
     public void onUpdate() {
+        if (riddenByEntity == null && lastRiddenByEntity != null) {
+            int posX = (int)this.posX;
+            int posY = (int)this.posY;
+            int posZ = (int)this.posZ;
+            boolean continueLoop = true;
+            for (int x = -1; x < 3; x++) {
+                if (!continueLoop) {
+                    break;
+                }
+                for (int z = -1; z < 3; z++) {
+                    if (x != 0 && z != 0) {
+                        if (worldObj.isAirBlock(posX + x, posY, posZ + z) && worldObj.isAirBlock(posX + x, posY + 1, posZ + z)) {
+                            lastRiddenByEntity.setPosition(posX + x, posY, posZ + z);
+                            continueLoop = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            lastRiddenByEntity = null;
+        }
         super.onUpdate();
     }
 
@@ -76,10 +98,8 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
     public boolean interactFirst(EntityPlayer player) {
         if (!worldObj.isRemote) {
             if (riddenByEntity == null) {
+                lastRiddenByEntity = player;
                 player.mountEntity(this);
-            }
-            else if (riddenByEntity == player) {
-                player.dismountEntity(this);
             }
         }
 

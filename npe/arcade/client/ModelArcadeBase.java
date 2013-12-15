@@ -12,8 +12,6 @@ import net.minecraft.entity.Entity;
 
 public class ModelArcadeBase extends ModelBase
 {
-    boolean isTopPart;
-
     //fields
     ModelRenderer Base;
 
