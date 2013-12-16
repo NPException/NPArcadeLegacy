@@ -3,7 +3,15 @@
 
 Repository for ModJam December 2013
 
-## TODO:
+## Ideas to fix bugs
+- Lighting of ArcadeTop is messed up:
+  In addition to emitting a light level, check the following methods:
+  - getAmbientOcclusionLightValue
+  - isAmbientOcclusionEnabled
+  - getAoBrightness
+  - renderStandardBlockWithAmbientOcclusionPartial
+
+## TODO
 - [ ] implement a game
 - [ ] play game on client
 - [ ] send screen image to server
@@ -19,6 +27,8 @@ Repository for ModJam December 2013
 - [ ] make more parts, so you actually need to craft the arcade piece by piece. should be more or less expensive
 - [ ] make arcade machines dungeonloot
 - [ ] make arcade machine use coins (custom item)
+- [ ] implement MinecraftForge.setBlockHarvestLevel(Block block, String toolClass, int tier)
+  - (see http://www.minecraftforge.net/wiki/Basic_Blocks for reference)
 
 ## Advanced Game Ideas
 - Make a game which teleports the player into the game
