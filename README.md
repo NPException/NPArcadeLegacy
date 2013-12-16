@@ -17,7 +17,11 @@ Repository for ModJam December 2013
 - Make a game which teleports the player into the game
   - custom dimension (flat)
   - rendered top-down as pixely graphics on the arcade machine
-    which are visible to other players
+    which are visible to other players.
+    Two possible ways to do that:
+    - either generate custom sprites at startup for each Block, Item and Entity
+      (would be cooler IMO)
+    - or just use GL11 rendering code for a top down view
   - do something special if player dies in the game
   - Rendering on player transition:
     - Fade player into a bunch of particles which then
