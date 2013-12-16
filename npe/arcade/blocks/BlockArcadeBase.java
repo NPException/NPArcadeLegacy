@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import npe.arcade.items.Items;
 import npe.arcade.tileentities.TileEntityArcadeBase;
@@ -73,6 +74,11 @@ public class BlockArcadeBase extends BlockContainer {
     @Override
     public boolean isOpaqueCube() {
         return false;
+    }
+
+    @Override
+    public int getLightValue(IBlockAccess world, int x, int y, int z) {
+        return 10;
     }
 
     @Override

@@ -3,16 +3,6 @@
 
 Repository for ModJam December 2013
 
-## Ideas to fix bugs
-- Lighting of ArcadeTop is messed up:
-  In addition to emitting a light level, check the following methods:
-  - getAmbientOcclusionLightValue
-  - isAmbientOcclusionEnabled
-  - getAoBrightness
-  - renderStandardBlockWithAmbientOcclusionPartial
-
-
-
 ## Advanced Game Ideas
 - Make a game which teleports the player into the game
   - custom dimension (flat)

@@ -14,7 +14,7 @@ public class Blocks {
         arcadeBase = new BlockArcadeBase(BlockInfo.ARCADE_BASE_ID);
         GameRegistry.registerBlock(arcadeBase, BlockInfo.ARCADE_BASE_KEY);
 
-        arcadeTop = new BlockArcadeTop(BlockInfo.ARCADE_TOP_ID).setLightValue(1f);
+        arcadeTop = new BlockArcadeTop(BlockInfo.ARCADE_TOP_ID);
         GameRegistry.registerBlock(arcadeTop, BlockInfo.ARCADE_TOP_KEY);
     }
 

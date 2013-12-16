@@ -6,8 +6,10 @@
 
 package npe.arcade.client;
 
+import static org.lwjgl.opengl.GL11.*;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 
 public class ModelArcadeTop extends ModelBase {
@@ -142,7 +144,17 @@ public class ModelArcadeTop extends ModelBase {
         setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
         Backwall.render(f5);
+
+        // make the top bar glowing and transparent
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        float oldLightX = OpenGlHelper.lastBrightnessX;
+        float oldLightY = OpenGlHelper.lastBrightnessY;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 242f, 240f);
         Top_Bar.render(f5);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, oldLightX, oldLightY);
+        glDisable(GL_BLEND);
+
         SideR1.render(f5);
         SideR2.render(f5);
         SideR3.render(f5);
@@ -157,8 +169,13 @@ public class ModelArcadeTop extends ModelBase {
         Button4.render(f5);
         Stick.render(f5);
 
-        // TODO: Make configureable
-        GlassPane.render(f5);
+        // maybe use that some time later. Make the texture prettier first.
+        //        glEnable(GL_BLEND);
+        //        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 245f, 245f);
+        //        GlassPane.render(f5);
+        //        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, oldLightX, oldLightY);
+        //        glDisable(GL_BLEND);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z)
