@@ -30,3 +30,6 @@ Repository for ModJam December 2013
     - Fade player into a bunch of particles which then
       fly into the arcade screen at a random order
     - same in reverse when player is getting out
+  - "Cursed Arcade Machine" as rare dungeon loot for that matter?
+    - boolean flag "isCursed"
+    - maybe use enemies and blocks for leveldesign from GhostMod if it is installed?
