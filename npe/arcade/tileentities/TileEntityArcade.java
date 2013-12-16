@@ -19,6 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.interfaces.IArcadeMachine;
 
 import org.lwjgl.opengl.GL11;
@@ -40,11 +41,11 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     private final DataWatcher datawatcher;
 
     /*
-     * Values that need synchronization with the server
+     * Values that may need synchronization with the server
      */
 
     private int damage = 0;
-    private boolean occupied;
+    private EntityArcadeSeat occupiedBySeat;
 
     // TODO: remove me, I'm temporary
     public Color backgroundColor = Color.DARK_GRAY.darker().darker();
@@ -166,6 +167,10 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         if (glTextureId != -1) {
             GL11.glDeleteTextures(glTextureId);
         }
+    }
+
+    public void setOccupiedBySeat(EntityArcadeSeat seat) {
+        occupiedBySeat = seat;
     }
 
     @Override
