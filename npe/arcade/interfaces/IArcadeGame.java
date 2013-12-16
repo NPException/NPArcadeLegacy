@@ -1,13 +1,24 @@
 package npe.arcade.interfaces;
 
+import java.awt.image.BufferedImage;
+
 public interface IArcadeGame {
 
     /**
-     * The name of the game
+     * The name of the game. Will be displayed in the game choose menu. Should not be too long so it fits withing 96
+     * pixels ;)
      * 
-     * @return
+     * @return The gameTitle. Must NOT be null.
      */
     public String getTitle();
+
+    /**
+     * Returns the game logo of some sorts. If not null, this logo will be shown in the game choose menu instead of just
+     * the name.
+     * 
+     * @return The logo of the game. Can be null. May get resized if it is to large to fit the game choose menu.
+     */
+    public BufferedImage getGameIcon();
 
     /**
      * Sets a reference to the IArcadeMachine instance on which this game is running.

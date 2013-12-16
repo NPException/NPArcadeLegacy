@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import npe.arcade.items.Items;
 import npe.arcade.tileentities.TileEntityArcade;
@@ -22,7 +23,7 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
     private TileEntityArcade arcadeMachine;
 
     public final float placementRotation;
-    private Entity lastRiddenByEntity;
+    private Entity lastRiddenByEntity; // TODO: use to force player next to the seat if he dismounts
 
     public EntityArcadeSeat(World world) {
         super(world);
@@ -58,6 +59,12 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
 
     @Override
     public void onUpdate() {
+        // check if the arcadeMachine is still there
+        if (arcadeMachine != null && arcadeMachine.isInvalid()) {
+            arcadeMachine.setOccupiedBySeat(null);
+            arcadeMachine = null;
+        }
+
         //        if (riddenByEntity == null && lastRiddenByEntity != null) {
         //            int posX = (int)this.posX;
         //            int posY = (int)this.posY;
@@ -116,17 +123,14 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
             }
 
             if (!isCreative) {
-                float spawnX = (float)posX + worldObj.rand.nextFloat() - 0.5f;
-                float spawnY = (float)posY + worldObj.rand.nextFloat() - 0.5f;
-                float spawnZ = (float)posZ + worldObj.rand.nextFloat() - 0.5f;
 
-                EntityItem droppedItem = new EntityItem(worldObj, spawnX, spawnY, spawnZ, new ItemStack(Items.arcadeSeat));
+                EntityItem droppedItem = new EntityItem(worldObj, posX, posY + 0.2, posZ, new ItemStack(Items.arcadeSeat));
 
                 float mult = 0.05F;
 
-                droppedItem.motionX = (-0.5F + worldObj.rand.nextFloat()) * 2 * mult;
+                droppedItem.motionX = (-0.5F + worldObj.rand.nextFloat()) * 1.5f * mult;
                 droppedItem.motionY = (4 + worldObj.rand.nextFloat()) * mult;
-                droppedItem.motionZ = (-0.5F + worldObj.rand.nextFloat()) * 2 * mult;
+                droppedItem.motionZ = (-0.5F + worldObj.rand.nextFloat()) * 1.5f * mult;
 
                 worldObj.spawnEntityInWorld(droppedItem);
             }
@@ -148,7 +152,8 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
     }
 
     /**
-     * Called when the seat occupies or "un"-occupies an arcademachine
+     * Called when the seat occupies or "un"-occupies an arcademachine<br>
+     * (copy pasta from mountEntity(...) code)
      */
     public void occupyArcade(TileEntityArcade arcade)
     {
@@ -169,15 +174,16 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
 
             arcadeMachine = arcade;
             arcadeMachine.setOccupiedBySeat(this);
-            if (!worldObj.isRemote)
-            {
-                System.out.println("Seat at " + ((int)posX - 1) + " " + (int)posY + " " + (int)posZ + " occupied ArcadeMachine at" + arcadeMachine.xCoord + " " + arcadeMachine.yCoord + " " + arcadeMachine.zCoord); // TODO remove
-            }
         }
     }
 
     public TileEntityArcade getOccupiedArcadeMachine() {
         return arcadeMachine;
+    }
+
+    @Override
+    public ItemStack getPickedResult(MovingObjectPosition target) {
+        return new ItemStack(Items.arcadeSeat);
     }
 
     //

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -13,6 +14,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import npe.arcade.items.Items;
+import npe.arcade.tileentities.TileEntityArcade;
 import npe.arcade.tileentities.TileEntityArcadeBase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -49,17 +51,25 @@ public class BlockArcadeBase extends BlockContainer {
         onBlockDestroyed(world, x, y, z, meta);
     }
 
-    private void onBlockDestroyed(World world, int x, int y, int z, int meta) {
-        int yOffset = 1; // target the block on top
+    protected void onBlockDestroyed(World world, int x, int y, int z, int meta) {
+        int yOffsetForSecondBlock = 1; // target the block on top
         if (this instanceof BlockArcadeTop) {
-            yOffset = -1; // target the block below
+            yOffsetForSecondBlock = -1; // target the block below
         }
 
-        int blockID = world.getBlockId(x, y + yOffset, z);
+        int blockID = world.getBlockId(x, y + yOffsetForSecondBlock, z);
         if (BlockInfo.ARCADE_TOP_ID == blockID || BlockInfo.ARCADE_BASE_ID == blockID) {
-            world.setBlockToAir(x, y + yOffset, z);
+            world.setBlockToAir(x, y + yOffsetForSecondBlock, z);
         }
     }
+
+    @Override
+    public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
+        TileEntity te = world.getBlockTileEntity(x, y + 1, z);
+        if (te instanceof TileEntityArcade) {
+            ((TileEntityArcade)te).hitByPlayer(player);
+        }
+    };
 
     @Override
     public boolean renderAsNormalBlock() {

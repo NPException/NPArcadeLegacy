@@ -34,7 +34,7 @@ public class BlockArcadeTop extends BlockArcadeBase {
 
     @Override
     public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player) {
-        ((TileEntityArcade)world.getBlockTileEntity(x, y, z)).hitByPlayer(player);
+        super.onBlockClicked(world, x, y - 1, z, player);
     }
 
     @Override

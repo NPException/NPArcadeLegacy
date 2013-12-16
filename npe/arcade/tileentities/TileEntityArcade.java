@@ -13,7 +13,6 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -31,21 +30,17 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     private static BufferedImage frame;
 
-    private static final int DAMAGE_WATCH_ID = 0;
-
     private int glTextureId = -1;
 
     private final BufferedImage screen;
     public boolean isImageChanged = true;
 
-    private final DataWatcher datawatcher;
+    // this is synced by the seat itself.
+    private EntityArcadeSeat occupiedBySeat;
 
-    /*
-     * Values that may need synchronization with the server
-     */
+    // TODO: Values that may need synchronization with the server
 
     private int damage = 0;
-    private EntityArcadeSeat occupiedBySeat;
 
     // TODO: remove me, I'm temporary
     public Color backgroundColor = Color.DARK_GRAY.darker().darker();
@@ -54,8 +49,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
      * Constructor
      */
     public TileEntityArcade() {
-        datawatcher = new DataWatcher();
-        dataWatcherInit();
 
         InputStream inputstream = null;
         if (frame == null) {
@@ -88,10 +81,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         g.setColor(backgroundColor);
         g.fillRect(0, 0, 96, 128);
         g.drawImage(frame, 0, 0, null);
-    }
-
-    private void dataWatcherInit() {
-        datawatcher.addObject(DAMAGE_WATCH_ID, (byte)0);
     }
 
     public void hitByPlayer(EntityPlayer player) {
@@ -171,6 +160,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     public void setOccupiedBySeat(EntityArcadeSeat seat) {
         occupiedBySeat = seat;
+        // if (seat == null) game.setCurrentPlayerName(null);
     }
 
     @Override
