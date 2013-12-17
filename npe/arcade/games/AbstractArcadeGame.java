@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import npe.arcade.interfaces.IArcadeGame;
@@ -75,7 +76,7 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
     public void unload() {}
 
     @Override
-    public void doGameTick(KEY[] input) {
+    public void doGameTick(List<KEY> input) {
         Arrays.fill(this.input, false);
         for (KEY key : input) {
             this.input[key.id] = true;

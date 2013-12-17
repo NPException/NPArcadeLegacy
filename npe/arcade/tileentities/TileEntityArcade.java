@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -22,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.games.AbstractArcadeGame;
 import npe.arcade.interfaces.IArcadeGame;
+import npe.arcade.interfaces.IArcadeGame.KEY;
 import npe.arcade.interfaces.IArcadeMachine;
 
 import org.lwjgl.opengl.GL11;
@@ -44,6 +48,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     public boolean isImageChanged = true;
 
     private IArcadeGame game;
+    private final List<KEY> keysPressedDown = new ArrayList<KEY>(12);
 
     // this is synced by the seat itself.
     private EntityArcadeSeat occupiedBySeat;
@@ -96,6 +101,11 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         damage++;
     }
 
+    public void setOccupiedBySeat(EntityArcadeSeat seat) {
+        occupiedBySeat = seat;
+    }
+
+    // TODO: init game chooser here.
     private void initBaseGame() {
         game = new AbstractArcadeGame() {
 
@@ -111,9 +121,9 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         game.initialize();
     }
 
-    private int cursorX = 0;
-    private int cursorY = 0;
-
+    /**
+     * Where the magic happens...
+     */
     @Override
     public void updateEntity() {
         if (getWorldObj().isRemote) {
@@ -122,32 +132,47 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
                 initBaseGame();
             }
 
-            // game.doGameTick();
-            // screen.setRGB(0, 0, 96, 128, game.renderGraphics(), 0, 96);
+            Entity user = (occupiedBySeat == null) ? null : occupiedBySeat.riddenByEntity;
 
-            if (occupiedBySeat != null) {
-                if (occupiedBySeat.riddenByEntity != null && occupiedBySeat.riddenByEntity == Minecraft.getMinecraft().thePlayer) {
-                    GameSettings settings = Minecraft.getMinecraft().gameSettings;
-                    if (GameSettings.isKeyDown(settings.keyBindRight)) {
-                        cursorX = Math.min((SCREEN_WIDTH - 10 - game.getGameIcon().getWidth()) / 5, ++cursorX);
-                    }
-                    if (GameSettings.isKeyDown(settings.keyBindLeft)) {
-                        cursorX = Math.max(0, --cursorX);
-                    }
-                    if (GameSettings.isKeyDown(settings.keyBindBack)) {
-                        cursorY = Math.min((SCREEN_HEIGHT - 8 - game.getGameIcon().getWidth()) / 5, ++cursorY);
-                    }
-                    if (GameSettings.isKeyDown(settings.keyBindForward)) {
-                        cursorY = Math.max(0, --cursorY);
-                    }
+            // check the players name
+            String playerName = null;
+            if (user instanceof EntityPlayer) {
+                playerName = ((EntityPlayer)user).username;
+            }
+            game.setCurrentPlayerName(playerName);
+
+            // collect pressed input keys
+            keysPressedDown.clear();
+            if (user == Minecraft.getMinecraft().thePlayer) {
+                GameSettings settings = Minecraft.getMinecraft().gameSettings;
+                if (GameSettings.isKeyDown(settings.keyBindRight)) {
+                    keysPressedDown.add(KEY.RIGHT);
+                }
+                if (GameSettings.isKeyDown(settings.keyBindLeft)) {
+                    keysPressedDown.add(KEY.LEFT);
+                }
+                if (GameSettings.isKeyDown(settings.keyBindBack)) {
+                    keysPressedDown.add(KEY.DOWN);
+                }
+                if (GameSettings.isKeyDown(settings.keyBindForward)) {
+                    keysPressedDown.add(KEY.UP);
+                }
+                if (GameSettings.isKeyDown(settings.keyBindJump)) {
+                    keysPressedDown.add(KEY.A);
                 }
             }
+
+            // let the game tick
+            game.doGameTick(keysPressedDown);
 
             Graphics2D g = (Graphics2D)screen.getGraphics();
             g.setBackground(BACKGROUND_COLOR);
             g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-            g.drawImage(game.getGameIcon(), 5 + cursorX * 5, 5 + cursorY * 5, null);
+            BufferedImage gameGraphics = game.renderGraphics();
+            int w = gameGraphics.getWidth();
+            int h = gameGraphics.getHeight();
+            g.drawImage(gameGraphics, SCREEN_WIDTH / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, null);
 
             g.drawImage(FRAME, 0, 0, null);
             isImageChanged = true;
@@ -205,11 +230,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         if (glTextureId != -1) {
             GL11.glDeleteTextures(glTextureId);
         }
-    }
-
-    public void setOccupiedBySeat(EntityArcadeSeat seat) {
-        occupiedBySeat = seat;
-        // if (seat == null) game.setCurrentPlayerName(null);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package npe.arcade.interfaces;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public interface IArcadeGame {
 
@@ -66,7 +67,7 @@ public interface IArcadeGame {
      * @param input
      *            Contains all keys that are currently pressed.
      */
-    public void doGameTick(KEY[] input);
+    public void doGameTick(List<KEY> input);
 
     /**
      * Gets the current visible stuff of the game.<br>
