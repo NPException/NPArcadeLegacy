@@ -82,6 +82,8 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
             this.input[key.id] = true;
         }
         gameTick();
+
+        // TODO: render some fancy overlay
     }
 
     /**
@@ -89,7 +91,7 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
      */
     public abstract void gameTick();
 
-    protected boolean isKeyDown(KEY key) {
+    public boolean isKeyDown(KEY key) {
         return input[key.id];
     }
 

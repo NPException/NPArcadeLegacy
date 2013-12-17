@@ -23,7 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import npe.arcade.entities.EntityArcadeSeat;
-import npe.arcade.games.AbstractArcadeGame;
+import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeGame.KEY;
 import npe.arcade.interfaces.IArcadeMachine;
@@ -98,6 +98,12 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     }
 
     public void hitByPlayer(EntityPlayer player) {
+        // game will be null on Serverside
+        if (worldObj.isRemote) {
+            if (occupiedBySeat != null && occupiedBySeat.riddenByEntity == player) {
+                game.initialize();
+            }
+        }
         damage++;
     }
 
@@ -107,16 +113,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     // TODO: init game chooser here.
     private void initBaseGame() {
-        game = new AbstractArcadeGame() {
-
-            @Override
-            public String getTitle() {
-                return "testgame";
-            }
-
-            @Override
-            public void gameTick() {}
-        };
+        game = new CrapRacer();
         game.setArcadeMachine(this);
         game.initialize();
     }
