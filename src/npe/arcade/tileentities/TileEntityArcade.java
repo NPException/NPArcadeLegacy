@@ -27,6 +27,7 @@ import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeGame.KEY;
 import npe.arcade.interfaces.IArcadeMachine;
+import okushama.glnes.EmulatorNES;
 
 import org.lwjgl.opengl.GL11;
 
@@ -35,9 +36,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
-    private static final int SCREEN_WIDTH = 96;
-    private static final int SCREEN_HEIGHT = 128;
-    private static final int[] SCREEN_SIZE = { SCREEN_WIDTH, SCREEN_HEIGHT };
+    private int SCREEN_WIDTH = 196;
+    private int SCREEN_HEIGHT = 259;
+    private int[] SCREEN_SIZE = { SCREEN_WIDTH, SCREEN_HEIGHT };
 
     private static final Color BACKGROUND_COLOR = Color.BLACK.brighter();
     private static BufferedImage FRAME;
@@ -87,14 +88,14 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
         final int textureSize = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
         screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D)screen.getGraphics();
+       /* Graphics2D g = (Graphics2D)screen.getGraphics();
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         g.setClip(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         g.setBackground(BACKGROUND_COLOR);
         g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        g.drawImage(FRAME, 0, 0, null);
+        g.drawImage(FRAME, 0, 0, null);*/
     }
 
     public void hitByPlayer(EntityPlayer player) {
@@ -114,6 +115,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     // TODO: init game chooser here.
     private void initBaseGame() {
         game = new CrapRacer();
+     // game = new EmulatorNES("path/to/nes/rom");
         game.setArcadeMachine(this);
         game.initialize();
     }
@@ -165,13 +167,13 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
             Graphics2D g = (Graphics2D)screen.getGraphics();
             g.setBackground(BACKGROUND_COLOR);
             g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
             BufferedImage gameGraphics = game.renderGraphics();
             int w = gameGraphics.getWidth();
             int h = gameGraphics.getHeight();
+            SCREEN_WIDTH = w; SCREEN_HEIGHT = h;
             g.drawImage(gameGraphics, SCREEN_WIDTH / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, null);
 
-            g.drawImage(FRAME, 0, 0, null);
+           // g.drawImage(FRAME, 0, 0, null);
             isImageChanged = true;
         }
     }
