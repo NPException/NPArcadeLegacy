@@ -10,13 +10,11 @@ import static com.grapeshot.halfnes.utils.BIT6;
 import static com.grapeshot.halfnes.utils.BIT7;
 import static com.grapeshot.halfnes.utils.getbit;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.prefs.Preferences;
 
 import net.java.games.input.Component;
 import net.java.games.input.Controller;

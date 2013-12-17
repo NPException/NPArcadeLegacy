@@ -94,9 +94,6 @@ public class EmulatorNES implements IArcadeGame {
 	@Override
 	public void doGameTick(List<KEY> input) {
 		if(Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
-			if(!nes.runEmulation){
-				initialize();
-			}
 			for (int key : player1.keys.keySet()) {
 				if (Keyboard.isKeyDown(key)) {
 					if (pressedKeys.containsKey(key)) {
@@ -115,10 +112,6 @@ public class EmulatorNES implements IArcadeGame {
 					player1.onKeyUp(keys[i]);
 				}
 			}
-		}else{
-			if(nes.runEmulation){
-				nes.quit();
-			}
 		}
 	}
 
@@ -130,5 +123,14 @@ public class EmulatorNES implements IArcadeGame {
 	@Override
 	public void setCurrentPlayerName(String playername) {
 		currentPlayer = playername;
+		if(Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
+			if(!nes.runEmulation){
+				initialize();
+			}
+		}else{
+			if(nes.runEmulation){
+				nes.quit();
+			}
+		}
 	}
 }
