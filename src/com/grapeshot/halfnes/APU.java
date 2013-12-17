@@ -1,9 +1,12 @@
 package com.grapeshot.halfnes;
 
-import com.grapeshot.halfnes.audio.*;
 import java.util.ArrayList;
 
-import okushama.glnes.Main;
+import com.grapeshot.halfnes.audio.ExpansionSoundChip;
+import com.grapeshot.halfnes.audio.NoiseTimer;
+import com.grapeshot.halfnes.audio.SquareTimer;
+import com.grapeshot.halfnes.audio.Timer;
+import com.grapeshot.halfnes.audio.TriangleTimer;
 
 //HalfNES, Copyright Andrew Hoffman, October 2010
 public class APU {
