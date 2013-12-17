@@ -151,6 +151,12 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
         return 0.5;
     }
 
+    @Override
+    public void onEntityUpdate() {
+        // TODO Auto-generated method stub
+        super.onEntityUpdate();
+    }
+
     /**
      * Called when the seat occupies or "un"-occupies an arcademachine<br>
      * (copy pasta from mountEntity(...) code)

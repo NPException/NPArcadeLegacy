@@ -13,12 +13,15 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import npe.arcade.entities.EntityArcadeSeat;
+import npe.arcade.games.AbstractArcadeGame;
+import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
 
 import org.lwjgl.opengl.GL11;
@@ -28,12 +31,19 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
-    private static BufferedImage frame;
+    private static final int SCREEN_WIDTH = 96;
+    private static final int SCREEN_HEIGHT = 128;
+    private static final int[] SCREEN_SIZE = { SCREEN_WIDTH, SCREEN_HEIGHT };
+
+    private static final Color BACKGROUND_COLOR = Color.BLACK.brighter();
+    private static BufferedImage FRAME;
 
     private int glTextureId = -1;
 
     private final BufferedImage screen;
     public boolean isImageChanged = true;
+
+    private IArcadeGame game;
 
     // this is synced by the seat itself.
     private EntityArcadeSeat occupiedBySeat;
@@ -42,24 +52,21 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     private int damage = 0;
 
-    // TODO: remove me, I'm temporary
-    public Color backgroundColor = Color.DARK_GRAY.darker().darker();
-
     /**
      * Constructor
      */
     public TileEntityArcade() {
 
         InputStream inputstream = null;
-        if (frame == null) {
+        if (FRAME == null) {
             try
             {
                 Resource resource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("npearcade:textures/models/arcadeScreenFrame.png"));
                 inputstream = resource.getInputStream();
-                frame = ImageIO.read(inputstream);
+                FRAME = ImageIO.read(inputstream);
             }
             catch (IOException ex) {
-                frame = new BufferedImage(96, 128, BufferedImage.TYPE_INT_ARGB);
+                FRAME = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
             }
             finally
             {
@@ -73,45 +80,77 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
             }
         }
 
-        screen = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        final int textureSize = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
+        screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D)screen.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g.setClip(0, 0, 96, 128);
-        g.setColor(backgroundColor);
-        g.fillRect(0, 0, 96, 128);
-        g.drawImage(frame, 0, 0, null);
+        g.setClip(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        g.setBackground(BACKGROUND_COLOR);
+        g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        g.drawImage(FRAME, 0, 0, null);
     }
 
     public void hitByPlayer(EntityPlayer player) {
         damage++;
     }
 
-    private int tickcounter = 0;
+    private void initBaseGame() {
+        game = new AbstractArcadeGame() {
+
+            @Override
+            public String getTitle() {
+                return "testgame";
+            }
+
+            @Override
+            public void gameTick() {}
+        };
+        game.setArcadeMachine(this);
+        game.initialize();
+    }
+
+    private int cursorX = 0;
+    private int cursorY = 0;
 
     @Override
     public void updateEntity() {
         if (getWorldObj().isRemote) {
+            // init game if it is not there
+            if (game == null) {
+                initBaseGame();
+            }
+
             // game.doGameTick();
             // screen.setRGB(0, 0, 96, 128, game.renderGraphics(), 0, 96);
 
-            if (tickcounter == 0 || tickcounter == 10) {
-                Color color = Color.WHITE;
-                if (tickcounter == 10) {
-                    color = backgroundColor;
+            if (occupiedBySeat != null) {
+                if (occupiedBySeat.riddenByEntity != null && occupiedBySeat.riddenByEntity == Minecraft.getMinecraft().thePlayer) {
+                    GameSettings settings = Minecraft.getMinecraft().gameSettings;
+                    if (GameSettings.isKeyDown(settings.keyBindRight)) {
+                        cursorX = Math.min((SCREEN_WIDTH - 10 - game.getGameIcon().getWidth()) / 5, ++cursorX);
+                    }
+                    if (GameSettings.isKeyDown(settings.keyBindLeft)) {
+                        cursorX = Math.max(0, --cursorX);
+                    }
+                    if (GameSettings.isKeyDown(settings.keyBindBack)) {
+                        cursorY = Math.min((SCREEN_HEIGHT - 8 - game.getGameIcon().getWidth()) / 5, ++cursorY);
+                    }
+                    if (GameSettings.isKeyDown(settings.keyBindForward)) {
+                        cursorY = Math.max(0, --cursorY);
+                    }
                 }
-                Graphics2D g = (Graphics2D)screen.getGraphics();
-                g.setColor(color);
-                g.fillRect(10, 10, 4, 6);
-                g.drawImage(frame, 0, 0, null);
-                isImageChanged = true;
             }
 
-            // update tickcounter
-            tickcounter++;
-            if (tickcounter > 20) {
-                tickcounter = 0;
-            }
+            Graphics2D g = (Graphics2D)screen.getGraphics();
+            g.setBackground(BACKGROUND_COLOR);
+            g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+            g.drawImage(game.getGameIcon(), 5 + cursorX * 5, 5 + cursorY * 5, null);
+
+            g.drawImage(FRAME, 0, 0, null);
+            isImageChanged = true;
         }
     }
 
@@ -126,6 +165,16 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         if (hcf || damage > 50) {
             // TODO: catch fire
         }
+    }
+
+    @Override
+    public int[] getScreenSize() {
+        return SCREEN_SIZE;
+    }
+
+    @Override
+    public Color getScreenBackgroundColor() {
+        return BACKGROUND_COLOR;
     }
 
     /*
