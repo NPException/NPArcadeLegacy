@@ -1,6 +1,9 @@
 package npe.arcade.client;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -87,7 +90,27 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		ty = -0.39d;
 		w = 0.752d;
 		h = 0.96d;
-		tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
+		Random rand = new Random();
+		int c = rand.nextInt(3);
+		float r = 0f, g = 0f, b = 0f;
+		boolean doBrokenEffect1 = false;
+			if(doBrokenEffect1){
+			switch(c){
+				case 0:
+					r = 1f;
+					break;
+				case 1:
+					g = 1f;
+					break;
+				case 2:
+					b = 1f;
+					break;
+			}		
+		}else{
+			r = g = b = 1f;
+		}
+			
+		tessellator.setColorRGBA_F(r, g, b, 1F);
 		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
 		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
 		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
