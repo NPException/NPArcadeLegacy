@@ -1,10 +1,13 @@
 package npe.arcade.blocks;
 
+import java.util.Random;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import npe.arcade.tileentities.TileEntityArcade;
+import okushama.glnes.EmulatorNES;
 
 public class BlockArcadeTop extends BlockArcadeBase {
 

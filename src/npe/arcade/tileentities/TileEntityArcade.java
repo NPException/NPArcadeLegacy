@@ -28,6 +28,7 @@ import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeGame.KEY;
 import npe.arcade.interfaces.IArcadeMachine;
 import okushama.glnes.EmulatorNES;
+import okushama.glnes.RomDirectory;
 
 import org.lwjgl.opengl.GL11;
 
@@ -36,16 +37,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
-    private int SCREEN_WIDTH = 196;
-    private int SCREEN_HEIGHT = 259;
+    private int SCREEN_WIDTH = 16;
+    private int SCREEN_HEIGHT = 32;
     private int[] SCREEN_SIZE = { SCREEN_WIDTH, SCREEN_HEIGHT };
 
-    private static final Color BACKGROUND_COLOR = Color.BLACK.brighter();
-    private static BufferedImage FRAME;
+    private static final Color BACKGROUND_COLOR = Color.BLACK;
 
     private int glTextureId = -1;
 
-    private final BufferedImage screen;
+    private BufferedImage screen;
     public boolean isImageChanged = true;
 
     private IArcadeGame game;
@@ -57,37 +57,15 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     // TODO: Values that may need synchronization with the server
 
     private int damage = 0;
+    public boolean gameInitiated = false;
 
     /**
      * Constructor
      */
     public TileEntityArcade() {
-
-        InputStream inputstream = null;
-        if (FRAME == null) {
-            try
-            {
-                Resource resource = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("npearcade:textures/models/arcadeScreenFrame.png"));
-                inputstream = resource.getInputStream();
-                FRAME = ImageIO.read(inputstream);
-            }
-            catch (IOException ex) {
-                FRAME = new BufferedImage(SCREEN_WIDTH, SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-            }
-            finally
-            {
-                if (inputstream != null)
-                {
-                    try {
-                        inputstream.close();
-                    }
-                    catch (IOException e) {}
-                }
-            }
-        }
-
-        final int textureSize = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
-        screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
+       // set resolution
+    	setScreenResolution(256,224);
+        setGame(new CrapRacer());
        /* Graphics2D g = (Graphics2D)screen.getGraphics();
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -97,12 +75,29 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
         g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         g.drawImage(FRAME, 0, 0, null);*/
     }
+    
+    public TileEntityArcade setGame(IArcadeGame ingame){
+    	gameInitiated = false;
+    	game = ingame;
+    	return this;
+    }
+    
+    public void setScreenResolution(int w, int h){
+    	SCREEN_WIDTH = w;
+    	SCREEN_HEIGHT = h;
+    	SCREEN_SIZE = new int[]{ SCREEN_WIDTH, SCREEN_HEIGHT };
+    	 final int textureSize = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
+         screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
+    }
 
     public void hitByPlayer(EntityPlayer player) {
         // game will be null on Serverside
         if (worldObj.isRemote) {
             if (occupiedBySeat != null && occupiedBySeat.riddenByEntity == player) {
                 game.initialize();
+            }
+            if(player.isSneaking()){
+                setGame(new RomDirectory());
             }
         }
         damage++;
@@ -114,10 +109,9 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
     // TODO: init game chooser here.
     private void initBaseGame() {
-        game = new CrapRacer();
-     // game = new EmulatorNES("path/to/nes/rom");
         game.setArcadeMachine(this);
         game.initialize();
+        gameInitiated = true;
     }
 
     /**
@@ -127,10 +121,9 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
     public void updateEntity() {
         if (getWorldObj().isRemote) {
             // init game if it is not there
-            if (game == null) {
+            if (!gameInitiated) {
                 initBaseGame();
             }
-
             Entity user = (occupiedBySeat == null) ? null : occupiedBySeat.riddenByEntity;
 
             // check the players name
@@ -161,8 +154,13 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
                 }
             }
 
+            IArcadeGame currentGame = game;
             // let the game tick
             game.doGameTick(keysPressedDown);
+            
+            if(!game.equals(currentGame)){
+            	return;
+            }
 
             Graphics2D g = (Graphics2D)screen.getGraphics();
             g.setBackground(BACKGROUND_COLOR);
@@ -170,10 +168,8 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
             BufferedImage gameGraphics = game.renderGraphics();
             int w = gameGraphics.getWidth();
             int h = gameGraphics.getHeight();
-            SCREEN_WIDTH = w; SCREEN_HEIGHT = h;
-            g.drawImage(gameGraphics, SCREEN_WIDTH / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, null);
-
-           // g.drawImage(FRAME, 0, 0, null);
+            g.drawImage(gameGraphics, 0, 0, null);
+            //g.drawImage(gameGraphics, SCREEN_WIDTH / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, null);
             isImageChanged = true;
         }
     }

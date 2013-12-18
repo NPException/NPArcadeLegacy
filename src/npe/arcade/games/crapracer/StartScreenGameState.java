@@ -50,7 +50,7 @@ public class StartScreenGameState extends AbstractGameState {
         g.drawString("CRAP", 6, 25);
         g.drawString("RACER", 20, 55);
 
-        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 2));
         g.drawString("PRESS", 30, 80);
 
         if (tickCounter > 10) {
