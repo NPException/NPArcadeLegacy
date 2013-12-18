@@ -1,4 +1,4 @@
-package okushama.glnes;
+package okushama.arcade.system.programs.nes;
 
 import static com.grapeshot.halfnes.utils.BIT0;
 import static com.grapeshot.halfnes.utils.BIT1;

@@ -1,4 +1,4 @@
-package okushama.glnes;
+package okushama.arcade.system.programs.nes;
 
 public interface IKeyListener {
 

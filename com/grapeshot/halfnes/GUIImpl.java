@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
-import okushama.glnes.EmulatorNES;
+import okushama.arcade.system.programs.nes.ProgramNESEmulator;
 
 public class GUIImpl extends JFrame implements GUIInterface {
 
@@ -56,9 +56,9 @@ public class GUIImpl extends JFrame implements GUIInterface {
     private int NES_HEIGHT = 224, NES_WIDTH;
     private Renderer renderer;
     private final ControllerImpl padController1, padController2;
-    public EmulatorNES emu;
+    public ProgramNESEmulator emu;
     
-    public GUIImpl(NES nes, EmulatorNES e) {
+    public GUIImpl(NES nes, ProgramNESEmulator e) {
         this.nes = nes;
         emu = e;
         screenScaleFactor = PrefsSingleton.get().getInt("screenScaling", 2);

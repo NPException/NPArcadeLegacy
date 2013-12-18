@@ -1,6 +1,8 @@
-package okushama.arcade.system;
+package okushama.arcade.system.programs;
 
 import java.awt.image.BufferedImage;
+
+import okushama.arcade.system.OS;
 
 public interface IProgram {
 

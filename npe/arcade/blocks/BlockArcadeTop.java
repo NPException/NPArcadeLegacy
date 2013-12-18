@@ -7,7 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import npe.arcade.tileentities.TileEntityArcade;
-import okushama.glnes.EmulatorNES;
+import okushama.arcade.system.programs.nes.ProgramNESEmulator;
 
 public class BlockArcadeTop extends BlockArcadeBase {
 

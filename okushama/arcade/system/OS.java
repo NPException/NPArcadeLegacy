@@ -20,13 +20,16 @@ import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
 import npe.arcade.tileentities.TileEntityArcade;
 
-import okushama.glnes.EmulatorNES;
-import okushama.glnes.RomDirectory;
+import okushama.arcade.system.programs.IProgram;
+import okushama.arcade.system.programs.ProgramReloadSettings;
+import okushama.arcade.system.programs.nes.ProgramNESDirectory;
+import okushama.arcade.system.programs.nes.ProgramNESEmulator;
 
 import org.lwjgl.input.Keyboard;
 
 public class OS implements IArcadeGame {
 
+	private static OSSettings settings = OSSettings.load();
 	public IArcadeMachine machine;
 	public BufferedImage gameIcon;
 	public String currentPlayer = null;
@@ -40,7 +43,8 @@ public class OS implements IArcadeGame {
 	@Override
 	public void initialize() {
 		((TileEntityArcade)machine).setScreenResolution(256,224);
-		programs.add(new RomDirectory(this));
+		programs.add(new ProgramNESDirectory(this));
+		programs.add(new ProgramReloadSettings(this));
 		keys.put("os", new ArrayList<Integer>(){
 			{
 				add(Keyboard.KEY_DOWN);
@@ -58,6 +62,31 @@ public class OS implements IArcadeGame {
 	public void unloadProgram(){
 		currentProgram = null;
 	}
+	private Color osBackground = null;
+	private Color osForeground = null;
+
+	public void reloadSettings(){
+		osBackground = null;
+		osForeground = null;
+		settings = OSSettings.load();	
+		imageDirty = true;
+	}
+	
+	public Color getBackground(){
+		if(osBackground == null){
+			System.out.println("Remapping colour!");
+			osBackground = new Color(settings.colourBackground[0], settings.colourBackground[1], settings.colourBackground[2]);
+		}
+		return osBackground;
+	}
+	
+	public Color getForeground(){
+		if(osForeground == null){
+			System.out.println("Remapping colour!");
+			osForeground = new Color(settings.colourForeground[0], settings.colourForeground[1], settings.colourForeground[2]);
+		}
+		return osForeground;
+	}
 
 	public BufferedImage getImage() {
 		if(currentProgram != null){
@@ -69,9 +98,9 @@ public class OS implements IArcadeGame {
 			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-			g.setColor(Color.BLACK);
+			g.setColor(getBackground());
 			g.fillRect(0, 0, machine.getScreenSize()[0], machine.getScreenSize()[1]);
-			g.setColor(Color.WHITE);
+			g.setColor(getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString(getTitle(), 10, 20);
 			int markerOffset = 0;
@@ -125,7 +154,7 @@ public class OS implements IArcadeGame {
 	}
 	
 	public void onKeyDown(int key){
-		if(currentProgram != null && keys.get(currentProgram.getTitle()).contains(key)){
+		if(currentProgram != null && keys.get(currentProgram.getTitle()) != null && keys.get(currentProgram.getTitle()).contains(key)){
 			currentProgram.onKeyDown(key);
 		}else{
 			if(key == Keyboard.KEY_DOWN){

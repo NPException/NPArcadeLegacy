@@ -1,6 +1,6 @@
 package com.grapeshot.halfnes;
 
-import okushama.glnes.EmulatorNES;
+import okushama.arcade.system.programs.nes.ProgramNESEmulator;
 
 import com.grapeshot.halfnes.mappers.BadMapperException;
 import com.grapeshot.halfnes.mappers.Mapper;
@@ -28,9 +28,9 @@ public class NES implements Runnable{
     // Pro Action Replay device
     private ActionReplay actionReplay;
     
-    public EmulatorNES emu;
+    public ProgramNESEmulator emu;
 
-    public NES(EmulatorNES e) {
+    public NES(ProgramNESEmulator e) {
     	emu = e;
     	gui = new GUIImpl(this, emu);
     	gui.run();

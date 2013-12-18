@@ -1,4 +1,4 @@
-package okushama.glnes;
+package okushama.arcade.system.programs.nes;
 
 import static java.awt.RenderingHints.*;
 
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import npe.arcade.tileentities.TileEntityArcade;
-import okushama.arcade.system.IProgram;
 import okushama.arcade.system.OS;
+import okushama.arcade.system.programs.IProgram;
 
 import org.lwjgl.input.Keyboard;
 
-public class RomDirectory implements IProgram {
+public class ProgramNESDirectory implements IProgram {
 
 	public BufferedImage gameIcon;
 	public boolean imageDirty = false;
@@ -24,7 +24,7 @@ public class RomDirectory implements IProgram {
 	private int current = 0;
 	private final OS os;
 
-	public RomDirectory(OS o) {
+	public ProgramNESDirectory(OS o) {
 		os = o;
 		File romDirectory = new File("roms");
 		if (!romDirectory.exists()) {
@@ -52,15 +52,15 @@ public class RomDirectory implements IProgram {
 
 	@Override
 	public BufferedImage getImage() {
-		if (gameIcon == null || imageDirty)
+		if (gameIcon == null || imageDirty || getOS().imageDirty)
 		{
 			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-			g.setColor(Color.BLACK);
+			g.setColor(getOS().getBackground());
 			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
-			g.setColor(Color.WHITE);
+			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString("CHOOSE A ROM", 10, 20);
 			int markerOffset = 0;
@@ -137,7 +137,7 @@ public class RomDirectory implements IProgram {
 		if (i == Keyboard.KEY_RETURN) {
 			if (roms.size() > 0) {
 				Rom rom = roms.get(current);
-				getOS().loadProgram(new EmulatorNES(getOS(), rom.path, rom.name));
+				getOS().loadProgram(new ProgramNESEmulator(getOS(), rom.path, rom.name));
 			}
 		}
 		if (i == Keyboard.KEY_BACK) {

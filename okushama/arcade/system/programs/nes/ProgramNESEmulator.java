@@ -1,31 +1,24 @@
-package okushama.glnes;
+package okushama.arcade.system.programs.nes;
 
-import static java.awt.RenderingHints.KEY_ANTIALIASING;
-import static java.awt.RenderingHints.KEY_RENDERING;
-import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
-import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
+import static java.awt.RenderingHints.*;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import npe.arcade.interfaces.IArcadeGame;
-import npe.arcade.interfaces.IArcadeMachine;
 import npe.arcade.tileentities.TileEntityArcade;
-
-import okushama.arcade.system.IProgram;
 import okushama.arcade.system.OS;
+import okushama.arcade.system.programs.IProgram;
 
 import org.lwjgl.input.Keyboard;
 
 import com.grapeshot.halfnes.NES;
 import com.grapeshot.halfnes.SwingAudioImpl;
 
-public class EmulatorNES implements IProgram {
+public class ProgramNESEmulator implements IProgram {
 
 	public BufferedImage gameIcon;
 	public BufferedImage nesOutput = null;
@@ -39,7 +32,7 @@ public class EmulatorNES implements IProgram {
 	public String romTitle;
 	public OS os;
 	
-	public EmulatorNES(OS o, String romPath, String romName) {
+	public ProgramNESEmulator(OS o, String romPath, String romName) {
 		os = o;
 		nesRom = romPath;
 		romTitle = romName;
@@ -69,15 +62,15 @@ public class EmulatorNES implements IProgram {
 				return nesOutput;
 			}
 		}
-		if (gameIcon == null) 
+		if (gameIcon == null || getOS().imageDirty) 
 		{
 			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-			g.setColor(Color.BLACK);
+			g.setColor(getOS().getBackground());
 			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
-			g.setColor(Color.WHITE);
+			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			String[] output = {
 					"NES EMULATOR",
@@ -130,6 +123,7 @@ public class EmulatorNES implements IProgram {
 			SwingAudioImpl.outputvol = Minecraft.getMinecraft().gameSettings.musicVolume;
 		}else{
 			if(nes.runEmulation){
+				SwingAudioImpl.outputvol = 0f;
 				//nes.quit();
 				//this.nesStarted = false;
 			}
@@ -155,7 +149,7 @@ public class EmulatorNES implements IProgram {
 				loadDelay = 20;
 			}
 			if(i == Keyboard.KEY_BACK){
-				getOS().loadProgram(new RomDirectory(getOS()));
+				getOS().loadProgram(new ProgramNESDirectory(getOS()));
 			}
 		}else{
 			if(i == Keyboard.KEY_BACK){
