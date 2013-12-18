@@ -1,7 +1,7 @@
 # ArcadeMod
 
 A small mod, which brings an arcade machine into the game.
-Said arcade machine is able to play user created games and programs.
+Said arcade machine is able to run user created games and programs.
 
 For example Mr_okushamas excellent implementation of a NES emulator!
 Play Super Mario in Minecraft yay :D
