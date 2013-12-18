@@ -1,7 +1,11 @@
-# ModJam
+# ArcadeMod
 
+A small mod, which brings an arcade machine into the game.
+Said arcade machine is able to play user created games and programs.
 
-Repository for ModJam December 2013
+For example Mr_okushamas excellent implementation of a NES emulator!
+Play Super Mario in Minecraft yay :D
+
 
 ## Advanced Game Ideas
 - Make a game which teleports the player into the game
