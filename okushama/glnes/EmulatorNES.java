@@ -5,22 +5,20 @@ import static java.awt.RenderingHints.KEY_RENDERING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
 import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
-import okushama.glnes.InputControls;
+import npe.arcade.tileentities.TileEntityArcade;
 
-import com.grapeshot.halfnes.GUIImpl;
+import org.lwjgl.input.Keyboard;
+
 import com.grapeshot.halfnes.NES;
 
 public class EmulatorNES implements IArcadeGame {
@@ -33,37 +31,54 @@ public class EmulatorNES implements IArcadeGame {
 	public String currentPlayer = null;
 	public String nesRom;
 	public NES nes;
-
-	public EmulatorNES(String romPath) {
+	public boolean nesStarted = false;
+	public HashMap<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
+	public int loadDelay = 20;
+	public String romTitle;
+	
+	public EmulatorNES(String romPath, String romName) {
 		nesRom = romPath;
-		if (nes == null){
-			nes = new NES(this);
-		}
-		nes.setControllers(player1, player2);
+		romTitle = romName;
 	}
 
 	@Override
 	public String getTitle() {
-		return "NES Emulator";
+		return "NES Emulator: "+romTitle;
 	}
 
 	public BufferedImage getImage() {
-		if (nesOutput != null) {
-			return nesOutput;
+		if(nes != null && nes.runEmulation){		
+			if (nesOutput != null) {
+				return nesOutput;
+			}
 		}
-		if (gameIcon == null) {
-			gameIcon = new BufferedImage(32, 16, BufferedImage.TYPE_INT_ARGB);
+		if (gameIcon == null) 
+		{
+			gameIcon = new BufferedImage(machine.getScreenSize()[0], machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-			g.setBackground(new Color(255, 255, 255, 0));
-			g.clearRect(0, 0, 32, 16);
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, machine.getScreenSize()[0], machine.getScreenSize()[1]);
 			g.setColor(Color.WHITE);
-			g.setStroke(new BasicStroke(1.5f));
-			g.drawRoundRect(1, 1, 30, 14, 3, 3);
-			g.drawRoundRect(5, 5, 22, 6, 1, 1);
-			g.setColor(Color.ORANGE);
-			g.drawRoundRect(3, 3, 26, 10, 2, 2);
+			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+			String[] output = {
+					"NES EMULATOR",
+					"Rom: "+romTitle,
+					"",
+					"Keys:",
+					"Arrows -  D-Pad",
+					"X      -  A",
+					"Z      -  B",
+					"Enter  -  Start",
+					"Shift  -  Select",
+					"Back   -  Quit Rom",
+					"",
+					"Press 'ENTER' to load",
+					"Press  'BACK' to quit"};
+			for(int i =0; i < output.length; i++){
+				g.drawString(output[i], 10, 20+(i*16));
+			}
 		}
 		return gameIcon;
 	}
@@ -80,22 +95,41 @@ public class EmulatorNES implements IArcadeGame {
 
 	@Override
 	public void initialize() {
-		nes.reset();
+		((TileEntityArcade)machine).setScreenResolution(256,224);
+		nes = new NES(this);
+		nes.setControllers(player1, player2);
+
+	}
+	
+	public void loadRom(){
 		nes.run(nesRom);
+		nesStarted = true;
 	}
 
 	@Override
 	public void unload() {
-
+		if(nes.runEmulation){
+			nes.quit();
+		}
+		nesStarted = false;
 	}
-
-	public HashMap<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
 
 	@Override
 	public void doGameTick(List<KEY> input) {
 		if(Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
-			if(!nes.runEmulation){
-				initialize();
+			if(!nesStarted){
+				loadDelay--;
+				if(Keyboard.isKeyDown(Keyboard.KEY_RETURN) && loadDelay < 1){
+					loadRom();
+					loadDelay = 20;
+				}
+				if(Keyboard.isKeyDown(Keyboard.KEY_BACK)){
+					((TileEntityArcade)machine).setGame(new RomDirectory());
+				}
+			}else{
+				if(Keyboard.isKeyDown(Keyboard.KEY_BACK)){
+					unload();
+				}
 			}
 			for (int key : player1.keys.keySet()) {
 				if (Keyboard.isKeyDown(key)) {
@@ -115,10 +149,6 @@ public class EmulatorNES implements IArcadeGame {
 					player1.onKeyUp(keys[i]);
 				}
 			}
-		}else{
-			if(nes.runEmulation){
-				nes.quit();
-			}
 		}
 	}
 
@@ -130,5 +160,11 @@ public class EmulatorNES implements IArcadeGame {
 	@Override
 	public void setCurrentPlayerName(String playername) {
 		currentPlayer = playername;
+		if(!Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
+			if(nes.runEmulation){
+				nes.quit();
+				this.nesStarted = false;
+			}
+		}
 	}
 }

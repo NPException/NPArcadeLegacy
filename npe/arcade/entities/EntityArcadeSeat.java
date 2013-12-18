@@ -17,6 +17,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnData {
 
@@ -156,8 +158,19 @@ public class EntityArcadeSeat extends Entity implements IEntityAdditionalSpawnDa
         // TODO Auto-generated method stub
         super.onEntityUpdate();
     }
+    
+    
 
-    /**
+    @Override
+	@SideOnly(Side.CLIENT)
+	public void setPositionAndRotation2(double par1, double par3, double par5,
+			float par7, float par8, int par9) {
+		// TODO Auto-generated method stub
+    	setPosition(par1, par3, par5);
+		//super.setPositionAndRotation2(par1, par3, par5, par7, par8, par9);
+	}
+
+	/**
      * Called when the seat occupies or "un"-occupies an arcademachine<br>
      * (copy pasta from mountEntity(...) code)
      */

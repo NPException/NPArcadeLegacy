@@ -1,6 +1,15 @@
 package npe.arcade.client;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glColor4f;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glRotatef;
+import static org.lwjgl.opengl.GL11.glTranslatef;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -21,6 +30,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
     private final ModelArcadeTop modelTop;
     private final ModelArcadeScreen modelScreen;
     private static final ResourceLocation textureTop = new ResourceLocation("npearcade:textures/models/arcade.png");
+    private static final ResourceLocation screenFrame = new ResourceLocation("npearcade", "textures/models/arcadeScreenFrame.png");
 
     public RenderArcadeTop() {
         modelTop = new ModelArcadeTop();
@@ -70,13 +80,12 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         glDisable(GL_CULL_FACE);
         RenderHelper.disableStandardItemLighting();
       
+        // Render default background //.toUppercase();
         glPushMatrix();
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         double tx = -0.5d, ty = -0.45d, w = 1, h = 1d;
-       // glScalef(0.85f, 1.1f, 1f);
         glBindTexture(GL_TEXTURE_2D, 0);
-
         tessellator.setColorRGBA_F(0F, 0F, 0F, 1F);
         tessellator.addVertexWithUV(tx+w, ty, 0, 1, 0);
         tessellator.addVertexWithUV(tx+w, ty+h, 0, 1, 1);
@@ -85,14 +94,13 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         tessellator.draw();
         glPopMatrix();
  
+        // render game screen //.toUppercase();
         glPushMatrix();
         glTranslatef(0f, 0f, -0.005f);
         tessellator = Tessellator.instance;
         glBindTexture(GL_TEXTURE_2D, arcade.getGlTextureId());
-
         tessellator.startDrawingQuads();
-        tx = -0.38d; ty = -0.36d; w = 0.752d; h = 0.96d;
-       // glScalef(0.85f, 1.1f, 1f);
+        tx = -0.37d; ty = -0.39d; w = 0.752d; h = 0.96d;
         tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
         tessellator.addVertexWithUV(tx+w, ty, 0, 1, 0);
         tessellator.addVertexWithUV(tx+w, ty+h, 0, 1, 1);
@@ -101,11 +109,11 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         tessellator.draw();
         glPopMatrix();
         
-        tx = -0.38d; ty = -0.45d; w = 0.752d; h = 0.96d;
- 
+        // render frame //.toUppercase();
+        glPushMatrix();
+        tx = -0.38d; ty = -0.45d; w = 0.756d; h = 0.96d;
         glTranslatef(0f, 0f, -0.01f);
-		ResourceLocation r = new ResourceLocation("npearcade", "textures/models/arcadeScreenFrame.png");
-		Minecraft.getMinecraft().getTextureManager().bindTexture(r);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(screenFrame);
         tessellator.startDrawingQuads();
         tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
         tessellator.addVertexWithUV(tx+w, ty, 0, 1, 0);
@@ -113,12 +121,13 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
         tessellator.addVertexWithUV(tx, ty+h, 0, 0, 1);
         tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
         tessellator.draw();
-      //  RenderHelper.enableStandardItemLighting();
+        glPopMatrix();
+        
         glEnable(GL_CULL_FACE);
         glPopMatrix();
-        //Tessellator.instance.setColorOpaque_F(1f, 1f, 1f);
-       // modelScreen.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+
         RenderHelper.enableStandardItemLighting();
+        
         // RENDER CASING //
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, oldLightX, oldLightY);
         Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
