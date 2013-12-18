@@ -16,7 +16,7 @@ public class SwingAudioImpl implements AudioOutInterface {
     private SourceDataLine sdl;
     private byte[] audiobuf;
     private int bufptr = 0;
-    private float outputvol;
+    public static float outputvol;
 
     public SwingAudioImpl(final NES nes, final int samplerate) {
         soundEnable = PrefsSingleton.get().getBoolean("soundEnable", true);

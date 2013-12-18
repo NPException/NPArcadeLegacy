@@ -12,10 +12,10 @@ import com.grapeshot.halfnes.mappers.Mapper;
 public class NES implements Runnable{
 
     private Mapper mapper;
-    private APU apu;
-    private CPU cpu;
-    private CPURAM cpuram;
-    private PPU ppu;
+    public APU apu;
+    public CPU cpu;
+    public CPURAM cpuram;
+    public PPU ppu;
     private ControllerInterface controller1, controller2;
     final public static String VERSION = "056";
     public boolean runEmulation = false;

@@ -8,6 +8,7 @@ import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -19,19 +20,21 @@ import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
 import npe.arcade.tileentities.TileEntityArcade;
 
+import okushama.arcade.system.IProgram;
+import okushama.arcade.system.OS;
+
 import org.lwjgl.input.Keyboard;
 
-public class RomDirectory implements IArcadeGame {
+public class RomDirectory implements IProgram {
 
-	public IArcadeMachine machine;
 	public BufferedImage gameIcon;
-	public String currentPlayer = null;
 	public boolean imageDirty = false;
 	public Map<String, String> roms = new HashMap<String, String>();
 	private int current = 0;
-	public HashMap<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
-
-	public RomDirectory() {
+	private OS os;
+	
+	public RomDirectory(OS o) {
+		os = o;
 		File romDirectory = new File("roms");
 		if(!romDirectory.exists()){
 			romDirectory.mkdir();
@@ -42,24 +45,33 @@ public class RomDirectory implements IArcadeGame {
 			}
 		}
 	}
+	
+	@Override
+	public void load() {
+		getOS().registerKey(this, Keyboard.KEY_DOWN);
+		getOS().registerKey(this, Keyboard.KEY_UP);
+		getOS().registerKey(this, Keyboard.KEY_RETURN);
+		getOS().registerKey(this, Keyboard.KEY_BACK);
+	}
+
 
 	@Override
 	public String getTitle() {
-		return "NES Emulator Rom Directory";
+		return "NES Emulator";
 	}
 
 	public BufferedImage getImage() {
 		if (gameIcon == null || imageDirty) 
 		{
-			gameIcon = new BufferedImage(machine.getScreenSize()[0], machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, machine.getScreenSize()[0], machine.getScreenSize()[1]);
+			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
 			g.setColor(Color.WHITE);
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
-			g.drawString("NES ROM DIRECTORY", 10, 20);
+			g.drawString("CHOOSE A ROM", 10, 20);
 			int markerOffset = 0;
 			if(current > 11){
 				int offset = 11 - current;
@@ -90,36 +102,28 @@ public class RomDirectory implements IArcadeGame {
 	}
 
 	@Override
-	public BufferedImage getGameIcon() {
-		return getImage();
-	}
-
-	@Override
-	public void setArcadeMachine(IArcadeMachine arcadeMachine) {
-		machine = arcadeMachine;
-	}
-
-	@Override
 	public void initialize() {
-		((TileEntityArcade)machine).setScreenResolution(256,224);
-	
+		((TileEntityArcade)getOS().machine).setScreenResolution(256,224);
 	}
 
 	@Override
 	public void unload() {
+		current = 0;
+	}
+
+	@Override
+	public void onTick() {
+		
+	}
+
+	@Override
+	public void onKeyUp(int i) {
 	
 	}
 
-	public Map<Integer, String> keys = new HashMap<Integer, String>(){
-		{
-			put(Keyboard.KEY_DOWN, "down");
-			put(Keyboard.KEY_UP, "up");
-			put(Keyboard.KEY_RETURN, "enter");
-		}
-	};
-	
-	public void onKeyDown(int key, String name){
-		if(name.equals("down")){
+	@Override
+	public void onKeyDown(int i) {
+		if(i == Keyboard.KEY_DOWN){
 			if(current < this.roms.size()-1){
 				current++;
 			}else{
@@ -127,7 +131,7 @@ public class RomDirectory implements IArcadeGame {
 			}
 			imageDirty = true;
 		}
-		if(name.equals("up")){
+		if(i == Keyboard.KEY_UP){
 			if(current > 0){
 				current--;
 			}else{
@@ -136,48 +140,18 @@ public class RomDirectory implements IArcadeGame {
 			imageDirty = true;
 
 		}
-		if(name.equals("enter")){
+		if(i == Keyboard.KEY_RETURN){
 			String pathToRom = roms.values().toArray(new String[0])[current];
 			String romName = roms.keySet().toArray(new String[0])[current];
-			((TileEntityArcade)machine).setGame(new EmulatorNES(pathToRom, romName));
+			getOS().loadProgram(new EmulatorNES(getOS(), pathToRom, romName));
 		}
-	}
-	
-	public void onKeyUp(int key, String name){
-		
-	}
-
-	@Override
-	public void doGameTick(List<KEY> input) {
-		if(Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
-			for (int key : keys.keySet()) {
-				if (Keyboard.isKeyDown(key)) {
-					if (pressedKeys.containsKey(key)) {
-						if (pressedKeys.get(key)) {
-							continue;
-						}
-					}
-					onKeyDown(key, keys.get(key));
-					pressedKeys.put(key, true);
-				}
-			}
-			Integer[] downkeys = pressedKeys.keySet().toArray(new Integer[0]);
-			for (int i = 0; i < downkeys.length; i++) {
-				if (!Keyboard.isKeyDown(downkeys[i])) {
-					pressedKeys.put(downkeys[i], false);
-					onKeyUp(downkeys[i], keys.get(downkeys[i]));
-				}
-			}
+		if(i == Keyboard.KEY_BACK){
+			getOS().unloadProgram();
 		}
 	}
 
 	@Override
-	public BufferedImage renderGraphics() {
-		return getImage();
-	}
-
-	@Override
-	public void setCurrentPlayerName(String playername) {
-		currentPlayer = playername;
+	public OS getOS() {
+		return os;
 	}
 }

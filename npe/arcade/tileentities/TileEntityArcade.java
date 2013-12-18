@@ -2,33 +2,25 @@ package npe.arcade.tileentities;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.resources.Resource;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ResourceLocation;
 import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeGame.KEY;
 import npe.arcade.interfaces.IArcadeMachine;
-import okushama.glnes.EmulatorNES;
-import okushama.glnes.RomDirectory;
+import okushama.arcade.system.OS;
 
 import org.lwjgl.opengl.GL11;
 
@@ -97,7 +89,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
                 game.initialize();
             }
             if(player.isSneaking()){
-                setGame(new RomDirectory());
+                setGame(new OS());
             }
         }
         damage++;
@@ -154,13 +146,13 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
                 }
             }
 
-            IArcadeGame currentGame = game;
+            // IArcadeGame currentGame = game;
             // let the game tick
             game.doGameTick(keysPressedDown);
             
-            if(!game.equals(currentGame)){
+            /* if(!game.equals(currentGame)){
             	return;
-            }
+            }*/
 
             Graphics2D g = (Graphics2D)screen.getGraphics();
             g.setBackground(BACKGROUND_COLOR);

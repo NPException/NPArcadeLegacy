@@ -17,28 +17,45 @@ import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
 import npe.arcade.tileentities.TileEntityArcade;
 
+import okushama.arcade.system.IProgram;
+import okushama.arcade.system.OS;
+
 import org.lwjgl.input.Keyboard;
 
 import com.grapeshot.halfnes.NES;
+import com.grapeshot.halfnes.SwingAudioImpl;
 
-public class EmulatorNES implements IArcadeGame {
+public class EmulatorNES implements IProgram {
 
-	public IArcadeMachine machine;
 	public BufferedImage gameIcon;
 	public BufferedImage nesOutput = null;
 	public InputControls player1 = new InputControls(1);
 	public InputControls player2 = new InputControls(1);
-	public String currentPlayer = null;
 	public String nesRom;
 	public NES nes;
 	public boolean nesStarted = false;
 	public HashMap<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
 	public int loadDelay = 20;
 	public String romTitle;
+	public OS os;
 	
-	public EmulatorNES(String romPath, String romName) {
+	public EmulatorNES(OS o, String romPath, String romName) {
+		os = o;
 		nesRom = romPath;
 		romTitle = romName;
+	}
+	
+	@Override
+	public void load() {
+		getOS().registerKey(this, Keyboard.KEY_DOWN);
+		getOS().registerKey(this, Keyboard.KEY_LEFT);
+		getOS().registerKey(this, Keyboard.KEY_RIGHT);
+		getOS().registerKey(this, Keyboard.KEY_UP);
+		getOS().registerKey(this, Keyboard.KEY_Z);
+		getOS().registerKey(this, Keyboard.KEY_X);
+		getOS().registerKey(this, Keyboard.KEY_RETURN);
+		getOS().registerKey(this, Keyboard.KEY_RSHIFT);
+		getOS().registerKey(this, Keyboard.KEY_BACK);
 	}
 
 	@Override
@@ -54,12 +71,12 @@ public class EmulatorNES implements IArcadeGame {
 		}
 		if (gameIcon == null) 
 		{
-			gameIcon = new BufferedImage(machine.getScreenSize()[0], machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, machine.getScreenSize()[0], machine.getScreenSize()[1]);
+			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
 			g.setColor(Color.WHITE);
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			String[] output = {
@@ -84,18 +101,8 @@ public class EmulatorNES implements IArcadeGame {
 	}
 
 	@Override
-	public BufferedImage getGameIcon() {
-		return getImage();
-	}
-
-	@Override
-	public void setArcadeMachine(IArcadeMachine arcadeMachine) {
-		machine = arcadeMachine;
-	}
-
-	@Override
 	public void initialize() {
-		((TileEntityArcade)machine).setScreenResolution(256,224);
+		((TileEntityArcade)getOS().machine).setScreenResolution(256,224);
 		nes = new NES(this);
 		nes.setControllers(player1, player2);
 
@@ -115,56 +122,48 @@ public class EmulatorNES implements IArcadeGame {
 	}
 
 	@Override
-	public void doGameTick(List<KEY> input) {
-		if(Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
+	public void onTick() {
+		if(Minecraft.getMinecraft().thePlayer.username.equals(getOS().currentPlayer)){
 			if(!nesStarted){
 				loadDelay--;
-				if(Keyboard.isKeyDown(Keyboard.KEY_RETURN) && loadDelay < 1){
-					loadRom();
-					loadDelay = 20;
-				}
-				if(Keyboard.isKeyDown(Keyboard.KEY_BACK)){
-					((TileEntityArcade)machine).setGame(new RomDirectory());
-				}
-			}else{
-				if(Keyboard.isKeyDown(Keyboard.KEY_BACK)){
-					unload();
-				}
 			}
-			for (int key : player1.keys.keySet()) {
-				if (Keyboard.isKeyDown(key)) {
-					if (pressedKeys.containsKey(key)) {
-						if (pressedKeys.get(key)) {
-							continue;
-						}
-					}
-					player1.onKeyDown(key);
-					pressedKeys.put(key, true);
-				}
-			}
-			Integer[] keys = pressedKeys.keySet().toArray(new Integer[0]);
-			for (int i = 0; i < keys.length; i++) {
-				if (!Keyboard.isKeyDown(keys[i])) {
-					pressedKeys.put(keys[i], false);
-					player1.onKeyUp(keys[i]);
-				}
-			}
-		}
-	}
-
-	@Override
-	public BufferedImage renderGraphics() {
-		return getImage();
-	}
-
-	@Override
-	public void setCurrentPlayerName(String playername) {
-		currentPlayer = playername;
-		if(!Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)){
+			SwingAudioImpl.outputvol = Minecraft.getMinecraft().gameSettings.musicVolume;
+		}else{
 			if(nes.runEmulation){
-				nes.quit();
-				this.nesStarted = false;
+				//nes.quit();
+				//this.nesStarted = false;
 			}
 		}
 	}
+
+
+	@Override
+	public OS getOS() {
+		return os;
+	}
+
+	@Override
+	public void onKeyUp(int i) {
+		player1.onKeyUp(i);
+	}
+
+	@Override
+	public void onKeyDown(int i) {
+		if(!nesStarted){
+			if(i == Keyboard.KEY_RETURN && loadDelay < 1){
+				loadRom();
+				loadDelay = 20;
+			}
+			if(i == Keyboard.KEY_BACK){
+				getOS().loadProgram(new RomDirectory(getOS()));
+			}
+		}else{
+			if(i == Keyboard.KEY_BACK){
+				unload();
+			}
+			
+		player1.onKeyDown(i);	
+		}
+	}
+
 }
