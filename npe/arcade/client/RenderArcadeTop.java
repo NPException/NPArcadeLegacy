@@ -58,7 +58,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			arcade.isImageChanged = false;
 		}
 
-		glDisable(GL_LIGHTING);
+	//	glDisable(GL_LIGHTING);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
 		glPushMatrix();
@@ -80,6 +80,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		tessellator.draw();
 		glPopMatrix();
 
+		glDisable(GL_LIGHTING);
 		// render game screen //.toUppercase();
 		glPushMatrix();
 		glTranslatef(0f, 0f, -0.005f);
@@ -117,6 +118,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
 		tessellator.draw();
 		glPopMatrix();
+		glEnable(GL_LIGHTING);
 
 		// render frame //.toUppercase();
 		glPushMatrix();
@@ -145,7 +147,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
 		modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-		glEnable(GL_LIGHTING);
+	//	glEnable(GL_LIGHTING);
 		glPopMatrix();
 		glPopMatrix();
 	}

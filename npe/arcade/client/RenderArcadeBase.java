@@ -37,7 +37,7 @@ public class RenderArcadeBase extends TileEntitySpecialRenderer {
 
 		GL11.glPushMatrix();
 
-		GL11.glDisable(GL11.GL_LIGHTING);
+		//GL11.glDisable(GL11.GL_LIGHTING);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
 		GL11.glRotatef(180 - 90 * arcadeBase.getBlockMetadata(), 0, 1, 0);
@@ -46,7 +46,7 @@ public class RenderArcadeBase extends TileEntitySpecialRenderer {
 		Minecraft.getMinecraft().renderEngine.bindTexture(texture);
 		model.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-		GL11.glEnable(GL11.GL_LIGHTING);
+		//GL11.glEnable(GL11.GL_LIGHTING);
 
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
