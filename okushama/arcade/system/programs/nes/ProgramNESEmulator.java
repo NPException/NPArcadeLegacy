@@ -2,14 +2,12 @@ package okushama.arcade.system.programs.nes;
 
 import static java.awt.RenderingHints.*;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
-import npe.arcade.tileentities.TileEntityArcade;
 import okushama.arcade.system.OS;
 import okushama.arcade.system.programs.IProgram;
 
@@ -31,13 +29,13 @@ public class ProgramNESEmulator implements IProgram {
 	public int loadDelay = 20;
 	public String romTitle;
 	public OS os;
-	
+
 	public ProgramNESEmulator(OS o, String romPath, String romName) {
 		os = o;
 		nesRom = romPath;
 		romTitle = romName;
 	}
-	
+
 	@Override
 	public void load() {
 		getOS().registerKey(this, Keyboard.KEY_DOWN);
@@ -53,28 +51,29 @@ public class ProgramNESEmulator implements IProgram {
 
 	@Override
 	public String getTitle() {
-		return "NES Emulator: "+romTitle;
+		return "NES Emulator: " + romTitle;
 	}
 
+	@Override
 	public BufferedImage getImage() {
-		if(nes != null && nes.runEmulation){		
+		if (nes != null && nes.runEmulation) {
 			if (nesOutput != null) {
 				return nesOutput;
 			}
 		}
-		if (gameIcon == null || getOS().imageDirty) 
+		if (gameIcon == null || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
+			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
+			g.fillRect(0, 0, getOS().resX, getOS().resY);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			String[] output = {
 					"NES EMULATOR",
-					"Rom: "+romTitle,
+					"Rom: " + romTitle,
 					"",
 					"Keys:",
 					"Arrows -  D-Pad",
@@ -85,9 +84,9 @@ public class ProgramNESEmulator implements IProgram {
 					"Back   -  Quit Rom",
 					"",
 					"Press 'ENTER' to load",
-					"Press  'BACK' to quit"};
-			for(int i =0; i < output.length; i++){
-				g.drawString(output[i], 10, 20+(i*16));
+					"Press  'BACK' to quit" };
+			for (int i = 0; i < output.length; i++) {
+				g.drawString(output[i], 10, 20 + (i * 16));
 			}
 		}
 		return gameIcon;
@@ -95,20 +94,19 @@ public class ProgramNESEmulator implements IProgram {
 
 	@Override
 	public void initialize() {
-		((TileEntityArcade)getOS().machine).setScreenResolution(256,224);
 		nes = new NES(this);
 		nes.setControllers(player1, player2);
 
 	}
-	
-	public void loadRom(){
+
+	public void loadRom() {
 		nes.run(nesRom);
 		nesStarted = true;
 	}
 
 	@Override
 	public void unload() {
-		if(nes.runEmulation){
+		if (nes.runEmulation) {
 			nes.quit();
 		}
 		nesStarted = false;
@@ -116,20 +114,20 @@ public class ProgramNESEmulator implements IProgram {
 
 	@Override
 	public void onTick() {
-		if(Minecraft.getMinecraft().thePlayer.username.equals(getOS().currentPlayer)){
-			if(!nesStarted){
+		if (Minecraft.getMinecraft().thePlayer.username.equals(getOS().currentPlayer)) {
+			if (!nesStarted) {
 				loadDelay--;
 			}
 			SwingAudioImpl.outputvol = Minecraft.getMinecraft().gameSettings.musicVolume;
-		}else{
-			if(nes.runEmulation){
+		}
+		else {
+			if (nes.runEmulation) {
 				SwingAudioImpl.outputvol = 0f;
 				//nes.quit();
 				//this.nesStarted = false;
 			}
 		}
 	}
-
 
 	@Override
 	public OS getOS() {
@@ -143,20 +141,21 @@ public class ProgramNESEmulator implements IProgram {
 
 	@Override
 	public void onKeyDown(int i) {
-		if(!nesStarted){
-			if(i == Keyboard.KEY_RETURN && loadDelay < 1){
+		if (!nesStarted) {
+			if (i == Keyboard.KEY_RETURN && loadDelay < 1) {
 				loadRom();
 				loadDelay = 20;
 			}
-			if(i == Keyboard.KEY_BACK){
+			if (i == Keyboard.KEY_BACK) {
 				getOS().loadProgram(new ProgramNESDirectory(getOS()));
 			}
-		}else{
-			if(i == Keyboard.KEY_BACK){
+		}
+		else {
+			if (i == Keyboard.KEY_BACK) {
 				unload();
 			}
-			
-		player1.onKeyDown(i);	
+
+			player1.onKeyDown(i);
 		}
 	}
 

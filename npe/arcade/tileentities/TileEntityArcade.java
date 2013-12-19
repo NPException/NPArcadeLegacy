@@ -4,17 +4,22 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.client.resources.Resource;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.games.crapracer.CrapRacer;
@@ -30,231 +35,262 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
-    private int SCREEN_WIDTH = 16;
-    private int SCREEN_HEIGHT = 32;
-    private int[] SCREEN_SIZE = { SCREEN_WIDTH, SCREEN_HEIGHT };
+	private static final ResourceLocation frameResource = new ResourceLocation("npearcade", "textures/models/arcadeScreenFrame.png");
+	private static BufferedImage screenframeImage;
 
-    private static final Color BACKGROUND_COLOR = Color.BLACK;
+	private final int[] SUGGESTED_SCREEN_SIZE = { 96, 128 };
 
-    private int glTextureId = -1;
+	private int screenWidth, screenHeight;
+	private int gameOffsetX, gameOffsetY;
 
-    private BufferedImage screen;
-    public boolean isImageChanged = true;
+	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
-    private IArcadeGame game;
-    private final List<KEY> keysPressedDown = new ArrayList<KEY>(12);
+	private int glTextureId = -1;
 
-    // this is synced by the seat itself.
-    private EntityArcadeSeat occupiedBySeat;
+	private BufferedImage screen;
+	public boolean isImageChanged = true;
 
-    // TODO: Values that may need synchronization with the server
+	private IArcadeGame game;
+	private final List<KEY> keysPressedDown = new ArrayList<KEY>(12);
 
-    private int damage = 0;
-    public boolean gameInitiated = false;
+	// this is synced by the seat itself.
+	private EntityArcadeSeat occupiedBySeat;
 
-    /**
-     * Constructor
-     */
-    public TileEntityArcade() {
-       // set resolution
-    	setScreenResolution(256,224);
-        setGame(new CrapRacer());
-       /* Graphics2D g = (Graphics2D)screen.getGraphics();
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g.setClip(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        g.setBackground(BACKGROUND_COLOR);
-        g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        g.drawImage(FRAME, 0, 0, null);*/
-    }
-    
-    public TileEntityArcade setGame(IArcadeGame ingame){
-    	gameInitiated = false;
-    	game = ingame;
-    	return this;
-    }
-    
-    public void setScreenResolution(int w, int h){
-    	SCREEN_WIDTH = w;
-    	SCREEN_HEIGHT = h;
-    	SCREEN_SIZE = new int[]{ SCREEN_WIDTH, SCREEN_HEIGHT };
-    	 final int textureSize = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
-         screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
-    }
+	// Values that may need synchronization with the server
+	private int damage = 0;
 
-    public void hitByPlayer(EntityPlayer player) {
-        // game will be null on Serverside
-        if (worldObj.isRemote) {
-            if (occupiedBySeat != null && occupiedBySeat.riddenByEntity == player) {
-                game.initialize();
-            }
-            if(player.isSneaking()){
-                setGame(new OS());
-            }
-        }
-        damage++;
-    }
+	/**
+	 * Constructor
+	 */
+	public TileEntityArcade() {
+		screen = new BufferedImage(SUGGESTED_SCREEN_SIZE[0], SUGGESTED_SCREEN_SIZE[1], BufferedImage.TYPE_INT_ARGB);
+		screenWidth = screen.getWidth();
+		screenHeight = screen.getHeight();
+		try {
+			Resource resource = Minecraft.getMinecraft().getResourceManager().getResource(frameResource);
+			InputStream inputstream = resource.getInputStream();
+			screenframeImage = ImageIO.read(inputstream);
+		}
+		catch (Exception ex) {}
+	}
 
-    public void setOccupiedBySeat(EntityArcadeSeat seat) {
-        occupiedBySeat = seat;
-    }
+	/**
+	 * Try not to use this. This will get removed in the future.
+	 * 
+	 * @param newGame
+	 * @return
+	 */
+	@Deprecated
+	public TileEntityArcade setGame(IArcadeGame newGame) {
+		game = newGame;
+		game.setArcadeMachine(this);
+		game.initialize();
+		return this;
+	}
 
-    // TODO: init game chooser here.
-    private void initBaseGame() {
-        game.setArcadeMachine(this);
-        game.initialize();
-        gameInitiated = true;
-    }
-    
-    public float originalFov = -999;
-    public float zoomFov = -0.5f;
-    
-    public void updatePlayerFOV(String playerName){
-    	 float currentFov = Minecraft.getMinecraft().gameSettings.fovSetting;
-         if(currentFov >= 0 && originalFov == -999){
-         	originalFov = currentFov;
-         }
-         if(Minecraft.getMinecraft().thePlayer.username.equals(playerName)){
- 			if(currentFov > zoomFov){
- 				currentFov -= 0.05;
- 				if(GuiIngameForge.renderCrosshairs){
- 					GuiIngameForge.renderCrosshairs = false;
- 				}
- 			}
- 		}else{
- 			if(currentFov < originalFov){
- 				currentFov += 0.05;
- 				if(!GuiIngameForge.renderCrosshairs){
- 					GuiIngameForge.renderCrosshairs = true;
- 				}
- 			}
- 		}
-         Minecraft.getMinecraft().gameSettings.fovSetting = currentFov;
+	public void hitByPlayer(EntityPlayer player) {
+		// game will be null on Serverside
+		if (worldObj.isRemote) {
+			if (occupiedBySeat != null && occupiedBySeat.riddenByEntity == player) {
+				game.initialize();
+			}
+			if (player.isSneaking()) {
+				setGame(new OS());
+			}
+		}
+		damage++;
+	}
 
-    }
+	public void setOccupiedBySeat(EntityArcadeSeat seat) {
+		occupiedBySeat = seat;
+	}
 
-    /**
-     * Where the magic happens...
-     */
-    @Override
-    public void updateEntity() {
-        if (getWorldObj().isRemote) {
-            // init game if it is not there
-            if (!gameInitiated) {
-                initBaseGame();
-            }
-            Entity user = (occupiedBySeat == null) ? null : occupiedBySeat.riddenByEntity;
+	// TODO: init game chooser here.
+	private void initMainMenu() {
+		game = new CrapRacer();
+		game.setArcadeMachine(this);
+		game.initialize();
+	}
 
-            // check the players name
-            String playerName = null;
-            if (user instanceof EntityPlayer) {
-                playerName = ((EntityPlayer)user).username;
-            }
-            game.setCurrentPlayerName(playerName);
-          //  updatePlayerFOV(playerName);
-            // collect pressed input keys
-            keysPressedDown.clear();
-            if (user == Minecraft.getMinecraft().thePlayer) {
-                GameSettings settings = Minecraft.getMinecraft().gameSettings;
-                if (GameSettings.isKeyDown(settings.keyBindRight)) {
-                    keysPressedDown.add(KEY.RIGHT);
-                }
-                if (GameSettings.isKeyDown(settings.keyBindLeft)) {
-                    keysPressedDown.add(KEY.LEFT);
-                }
-                if (GameSettings.isKeyDown(settings.keyBindBack)) {
-                    keysPressedDown.add(KEY.DOWN);
-                }
-                if (GameSettings.isKeyDown(settings.keyBindForward)) {
-                    keysPressedDown.add(KEY.UP);
-                }
-                if (GameSettings.isKeyDown(settings.keyBindJump)) {
-                    keysPressedDown.add(KEY.A);
-                }
-            }
+	public float originalFov = -999;
+	public float zoomFov = -0.5f;
 
-            // IArcadeGame currentGame = game;
-            // let the game tick
-            game.doGameTick(keysPressedDown);
-            
-            /* if(!game.equals(currentGame)){
-            	return;
-            }*/
+	public void updatePlayerFOV(String playerName) {
+		float currentFov = Minecraft.getMinecraft().gameSettings.fovSetting;
+		if (currentFov >= 0 && originalFov == -999) {
+			originalFov = currentFov;
+		}
+		if (Minecraft.getMinecraft().thePlayer.username.equals(playerName)) {
+			if (currentFov > zoomFov) {
+				currentFov -= 0.05;
+				if (GuiIngameForge.renderCrosshairs) {
+					GuiIngameForge.renderCrosshairs = false;
+				}
+			}
+		}
+		else {
+			if (currentFov < originalFov) {
+				currentFov += 0.05;
+				if (!GuiIngameForge.renderCrosshairs) {
+					GuiIngameForge.renderCrosshairs = true;
+				}
+			}
+		}
+		Minecraft.getMinecraft().gameSettings.fovSetting = currentFov;
+	}
 
-            Graphics2D g = (Graphics2D)screen.getGraphics();
-            g.setBackground(BACKGROUND_COLOR);
-            g.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-            BufferedImage gameGraphics = game.renderGraphics();
-            int w = gameGraphics.getWidth();
-            int h = gameGraphics.getHeight();
-            g.drawImage(gameGraphics, 0, 0, null);
-            //g.drawImage(gameGraphics, SCREEN_WIDTH / 2 - w / 2, SCREEN_HEIGHT / 2 - h / 2, null);
-            isImageChanged = true;
-        }
-    }
+	/**
+	 * Where the magic happens...
+	 */
+	@Override
+	public void updateEntity() {
+		if (getWorldObj().isRemote) {
+			// init game if it is not there
+			if (game == null) {
+				initMainMenu();
+			}
+			Entity user = (occupiedBySeat == null) ? null : occupiedBySeat.riddenByEntity;
 
-    @Override
-    public void playSound(File soundFile) {
-        // TODO: play given soundFile
-    }
+			// check the players name
+			String playerName = null;
+			if (user instanceof EntityPlayer) {
+				playerName = ((EntityPlayer)user).username;
+			}
+			game.setCurrentPlayerName(playerName);
+			// updatePlayerFOV(playerName);
+			// collect pressed input keys
+			keysPressedDown.clear();
+			if (user == Minecraft.getMinecraft().thePlayer) {
+				GameSettings settings = Minecraft.getMinecraft().gameSettings;
+				if (GameSettings.isKeyDown(settings.keyBindRight)) {
+					keysPressedDown.add(KEY.RIGHT);
+				}
+				if (GameSettings.isKeyDown(settings.keyBindLeft)) {
+					keysPressedDown.add(KEY.LEFT);
+				}
+				if (GameSettings.isKeyDown(settings.keyBindBack)) {
+					keysPressedDown.add(KEY.DOWN);
+				}
+				if (GameSettings.isKeyDown(settings.keyBindForward)) {
+					keysPressedDown.add(KEY.UP);
+				}
+				if (GameSettings.isKeyDown(settings.keyBindJump)) {
+					keysPressedDown.add(KEY.A);
+				}
+			}
 
-    @Override
-    public void fail(boolean hcf) {
-        // TODO: display some error screen
-        if (hcf || damage > 50) {
-            // TODO: catch fire
-        }
-    }
+			// let the game tick
+			game.doGameTick(keysPressedDown);
 
-    @Override
-    public int[] getScreenSize() {
-        return SCREEN_SIZE;
-    }
+			///////////////////
+			// SCREEN UPDATE //
+			///////////////////
+			BufferedImage gameGraphics = game.renderGraphics();
+			int width = gameGraphics.getWidth();
+			int height = gameGraphics.getHeight();
 
-    @Override
-    public Color getScreenBackgroundColor() {
-        return BACKGROUND_COLOR;
-    }
+			// check if the resolution has changed or the screen isn't ready yet and create a new texture if necessary
+			if (screenWidth != width && screenHeight != height) {
+				generateNewScreenTexture(width, height);
+			}
 
-    /*
-     * Getter and convenience methods
-     */
+			Graphics2D g = (Graphics2D)screen.getGraphics();
+			g.setBackground(BACKGROUND_COLOR);
+			g.clearRect(0, 0, screenWidth, screenHeight);
+			g.drawImage(gameGraphics, gameOffsetX, gameOffsetY, null);
 
-    public int getGlTextureId()
-    {
-        if (glTextureId == -1) {
-            glTextureId = TextureUtil.glGenTextures();
-        }
-        return glTextureId;
-    }
+			if (screenframeImage != null) {
+				g.drawImage(screenframeImage, 0, 0, screenWidth, screenHeight, null);
+			}
 
-    public BufferedImage getScreenImage() {
-        return screen;
-    }
+			isImageChanged = true;
+		}
+	}
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public double getMaxRenderDistanceSquared() {
-        // TODO: make configurable
-        return 9216.0d;
-    }
+	private void generateNewScreenTexture(int neededWidth, int neededHeight) {
+		// todo: generate texture with sizes of ^2
+		int textureSize;
+		if (neededHeight > neededWidth) {
+			textureSize = neededHeight;
+			screenHeight = neededHeight;
+			screenWidth = (int)(screenHeight * 0.75);
+		}
+		else {
+			textureSize = neededWidth;
+			screenWidth = neededWidth;
+			screenHeight = (int)(screenWidth / 0.75);
+		}
+		screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
 
-    @Override
-    public void onChunkUnload() {
-        if (glTextureId != -1) {
-            GL11.glDeleteTextures(glTextureId);
-        }
-    }
+		gameOffsetX = (neededWidth > neededHeight) ? 0 : screenWidth / 2 - neededWidth / 2;
+		gameOffsetY = (neededHeight > neededWidth) ? 0 : screenHeight / 2 - neededHeight / 2;
+	}
 
-    @Override
-    public void writeToNBT(NBTTagCompound par1nbtTagCompound) {}
+	@Override
+	public void playSound(File soundFile) {
+		// TODO: play given soundFile
+	}
 
-    @Override
-    public void readFromNBT(NBTTagCompound par1nbtTagCompound) {}
+	@Override
+	public void fail(boolean hcf) {
+		// TODO: display some error screen
+		if (hcf || damage > 50) {
+			// halt and catch fire
+		}
+	}
 
-    @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
-    }
+	@Override
+	public int[] getSuggestedScreenSize() {
+		return SUGGESTED_SCREEN_SIZE;
+	}
+
+	@Override
+	public Color getScreenBackgroundColor() {
+		return BACKGROUND_COLOR;
+	}
+
+	/*
+	 * Getter and convenience methods
+	 */
+
+	public int getGlTextureId()
+	{
+		if (glTextureId == -1) {
+			glTextureId = TextureUtil.glGenTextures();
+		}
+		return glTextureId;
+	}
+
+	public BufferedImage getScreenImage() {
+		return screen;
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public double getMaxRenderDistanceSquared() {
+		// TODO: make configurable
+		return 9216.0d;
+	}
+
+	@Override
+	public void onChunkUnload() {
+		if (glTextureId != -1) {
+			GL11.glDeleteTextures(glTextureId);
+		}
+		if (worldObj.isRemote) {
+			game.unload();
+			game = null;
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {}
+
+	@Override
+	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+	}
 }

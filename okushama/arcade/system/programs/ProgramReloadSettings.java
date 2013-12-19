@@ -2,26 +2,22 @@ package okushama.arcade.system.programs;
 
 import static java.awt.RenderingHints.*;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import org.lwjgl.input.Keyboard;
-
 import okushama.arcade.system.OS;
-import okushama.arcade.system.OSSettings;
 
-public class ProgramReloadSettings implements IProgram{
+public class ProgramReloadSettings implements IProgram {
 
 	public BufferedImage gameIcon;
 	public OS os;
 	int ticks = 0;
-	
-	public ProgramReloadSettings(OS o){
+
+	public ProgramReloadSettings(OS o) {
 		os = o;
 	}
-	
+
 	@Override
 	public OS getOS() {
 		return os;
@@ -62,16 +58,16 @@ public class ProgramReloadSettings implements IProgram{
 	public BufferedImage getImage() {
 		if (gameIcon == null || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
+			g.fillRect(0, 0, getOS().resX, getOS().resY);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString("RELOADED SETTINGS", 10, 20);
-			g.drawString("Now returning you",10,36);
+			g.drawString("Now returning you", 10, 36);
 			g.drawString("to the main menu", 10, 52);
 		}
 		return gameIcon;
@@ -80,7 +76,7 @@ public class ProgramReloadSettings implements IProgram{
 	@Override
 	public void onTick() {
 		ticks++;
-		if(ticks >= 30){
+		if (ticks >= 30) {
 			getOS().reloadSettings();
 			getOS().unloadProgram();
 		}
