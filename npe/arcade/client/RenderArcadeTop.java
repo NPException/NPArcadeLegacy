@@ -22,8 +22,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 	//The model of your block
 	private final ModelArcadeTop modelTop;
 	private final ModelArcadeScreen modelScreen;
-	private static final ResourceLocation textureTop = new ResourceLocation("npearcade:textures/models/arcade.png");
-	private static final ResourceLocation screenFrame = new ResourceLocation("npearcade", "textures/models/arcadeScreenFrame.png");
+	private static final ResourceLocation textureTop = new ResourceLocation("npearcade", "textures/models/arcade.png");
 
 	public RenderArcadeTop() {
 		modelTop = new ModelArcadeTop();
@@ -58,7 +57,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			arcade.isImageChanged = false;
 		}
 
-	//	glDisable(GL_LIGHTING);
+		//	glDisable(GL_LIGHTING);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
 		glPushMatrix();
@@ -95,8 +94,8 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		int c = rand.nextInt(3);
 		float r = 0f, g = 0f, b = 0f;
 		boolean doBrokenEffect1 = false;
-			if(doBrokenEffect1){
-			switch(c){
+		if (doBrokenEffect1) {
+			switch (c) {
 				case 0:
 					r = 1f;
 					break;
@@ -106,38 +105,18 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 				case 2:
 					b = 1f;
 					break;
-			}		
-		}else{
+			}
+		}
+		else {
 			r = g = b = 1f;
 		}
-			
-		tessellator.setColorRGBA_F(r, g, b, 1F);
-		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
-		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
-		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
-		tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
-		tessellator.draw();
-		glPopMatrix();
-		glEnable(GL_LIGHTING);
 
-		// render frame //.toUppercase();
-		glPushMatrix();
-		tx = -0.38d;
-		ty = -0.45d;
-		w = 0.756d;
-		h = 0.96d;
-		glTranslatef(0f, 0f, -0.01f);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(screenFrame);
-		tessellator.startDrawingQuads();
-		tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 0.8F);
-		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
-		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
+		tessellator.setColorRGBA_F(r, g, b, 1F);
+		tessellator.addVertexWithUV(tx + w, ty, 0, 0.75, 0);
+		tessellator.addVertexWithUV(tx + w, ty + h, 0, 0.75, 1);
 		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
 		tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
 		tessellator.draw();
-		glDisable(GL_BLEND);
 		glPopMatrix();
 
 		glEnable(GL_CULL_FACE);
@@ -147,7 +126,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
 		modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-	//	glEnable(GL_LIGHTING);
+		//	glEnable(GL_LIGHTING);
 		glPopMatrix();
 		glPopMatrix();
 	}

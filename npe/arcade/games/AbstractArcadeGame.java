@@ -61,7 +61,7 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
     @Override
     public void initialize() {
         if (gameGraphics == null) {
-            gameGraphics = new BufferedImage(arcadeMachine.getScreenSize()[0], arcadeMachine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
+            gameGraphics = new BufferedImage(96, 128, BufferedImage.TYPE_INT_ARGB);
         }
         if (rand == null) {
             rand = new Random();

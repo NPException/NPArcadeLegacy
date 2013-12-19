@@ -2,7 +2,6 @@ package okushama.arcade.system.programs.nes;
 
 import static java.awt.RenderingHints.*;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -10,7 +9,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import npe.arcade.tileentities.TileEntityArcade;
 import okushama.arcade.system.OS;
 import okushama.arcade.system.programs.IProgram;
 
@@ -54,12 +52,12 @@ public class ProgramNESDirectory implements IProgram {
 	public BufferedImage getImage() {
 		if (gameIcon == null || imageDirty || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1], BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().machine.getScreenSize()[0], getOS().machine.getScreenSize()[1]);
+			g.fillRect(0, 0, getOS().resX, getOS().resY);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString("CHOOSE A ROM", 10, 20);
@@ -94,9 +92,7 @@ public class ProgramNESDirectory implements IProgram {
 	}
 
 	@Override
-	public void initialize() {
-		((TileEntityArcade)getOS().machine).setScreenResolution(256, 224);
-	}
+	public void initialize() {}
 
 	@Override
 	public void unload() {
