@@ -10,16 +10,16 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
-    @Override
-    public void initSounds() {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void initSounds() {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public void initRenderers() {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcade.class, new RenderArcadeTop());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcadeBase.class, new RenderArcadeBase());
-        RenderingRegistry.registerEntityRenderingHandler(EntityArcadeSeat.class, new RenderArcadeSeat());
-        //MinecraftForgeClient.registerItemRenderer(BlockInfo.ARCADE_ID, new RenderArcadeTechne());
-    }
+	@Override
+	public void initRenderers() {
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcade.class, new RenderArcadeTop());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcadeBase.class, new RenderArcadeBase());
+		RenderingRegistry.registerEntityRenderingHandler(EntityArcadeSeat.class, new RenderArcadeSeat());
+		//MinecraftForgeClient.registerItemRenderer(BlockInfo.ARCADE_ID, new RenderArcadeTechne());
+	}
 }

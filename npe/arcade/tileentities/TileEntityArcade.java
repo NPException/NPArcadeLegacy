@@ -213,12 +213,12 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		if (neededHeight > neededWidth) {
 			textureSize = neededHeight;
 			screenHeight = neededHeight;
-			screenWidth = (int)(screenHeight * 0.75);
+			screenWidth = screenHeight;
 		}
 		else {
 			textureSize = neededWidth;
 			screenWidth = neededWidth;
-			screenHeight = (int)(screenWidth / 0.75);
+			screenHeight = screenWidth;
 		}
 		screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
 

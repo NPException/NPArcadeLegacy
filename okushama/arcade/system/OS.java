@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.GuiIngameForge;
@@ -24,8 +22,6 @@ import okushama.arcade.system.programs.nes.ProgramNESDirectory;
 
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.common.FMLLog;
-
 public class OS implements IArcadeGame {
 
 	public final int resX = 256;
@@ -33,7 +29,7 @@ public class OS implements IArcadeGame {
 
 	private static OSSettings settings = OSSettings.load();
 	public static OSLogger logger = new OSLogger("okushama OS");
-	
+
 	public IArcadeMachine machine;
 	public BufferedImage gameIcon;
 	public String currentPlayer = null;
@@ -91,14 +87,14 @@ public class OS implements IArcadeGame {
 		if (currentProgram != null) {
 			return currentProgram.getImage();
 		}
-		if (gameIcon == null || imageDirty)
+		//	if (gameIcon == null || imageDirty)
 		{
-			gameIcon = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(resX, 224, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getBackground());
-			g.fillRect(0, 0, resX, resY);
+			g.fillRect(0, 0, resX, 224);
 			g.setColor(getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString(getTitle(), 10, 20);

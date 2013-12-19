@@ -1,7 +1,7 @@
 package npe.arcade.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -38,7 +38,8 @@ public class RenderArcadeBase extends TileEntitySpecialRenderer {
 		GL11.glPushMatrix();
 
 		//GL11.glDisable(GL11.GL_LIGHTING);
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+		Tessellator.instance.setColorRGBA_F(1f, 1f, 1f, 1f);
+		//	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
 		GL11.glRotatef(180 - 90 * arcadeBase.getBlockMetadata(), 0, 1, 0);
 		GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);

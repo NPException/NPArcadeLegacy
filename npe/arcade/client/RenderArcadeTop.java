@@ -5,7 +5,6 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -57,8 +56,8 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			arcade.isImageChanged = false;
 		}
 
-		//	glDisable(GL_LIGHTING);
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
+		glDisable(GL_LIGHTING);
+		//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
 
 		glPushMatrix();
 		glRotatef(25f, -1f, 0f, 0f);
@@ -79,10 +78,10 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		tessellator.draw();
 		glPopMatrix();
 
-		glDisable(GL_LIGHTING);
+		//glDisable(GL_LIGHTING);
 		// render game screen //.toUppercase();
 		glPushMatrix();
-		glTranslatef(0f, 0f, -0.005f);
+		glTranslatef(-0.005f, -0.06f, -0.005f);
 		tessellator = Tessellator.instance;
 		glBindTexture(GL_TEXTURE_2D, arcade.getGlTextureId());
 		tessellator.startDrawingQuads();
@@ -112,8 +111,8 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		}
 
 		tessellator.setColorRGBA_F(r, g, b, 1F);
-		tessellator.addVertexWithUV(tx + w, ty, 0, 0.75, 0);
-		tessellator.addVertexWithUV(tx + w, ty + h, 0, 0.75, 1);
+		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
+		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
 		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
 		tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
 		tessellator.draw();
@@ -121,13 +120,15 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 
 		glEnable(GL_CULL_FACE);
 		glPopMatrix();
+		glEnable(GL_LIGHTING);
 
+		Tessellator.instance.setColorRGBA_F(1f, 1f, 1f, 1f);
 		// RENDER CASING //
 		Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
 		modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-		//	glEnable(GL_LIGHTING);
 		glPopMatrix();
+
 		glPopMatrix();
 	}
 
