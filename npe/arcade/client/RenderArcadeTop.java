@@ -125,14 +125,17 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		w = 0.756d;
 		h = 0.96d;
 		glTranslatef(0f, 0f, -0.01f);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(screenFrame);
 		tessellator.startDrawingQuads();
-		tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 1F);
+		tessellator.setColorRGBA_F(1.0F, 1.0F, 1.0F, 0.8F);
 		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
 		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
 		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
 		tessellator.addVertexWithUV(tx, ty, 0, 0, 0);
 		tessellator.draw();
+		glDisable(GL_BLEND);
 		glPopMatrix();
 
 		glEnable(GL_CULL_FACE);
