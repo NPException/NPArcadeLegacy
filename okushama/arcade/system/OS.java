@@ -73,7 +73,7 @@ public class OS implements IArcadeGame {
 
 	public Color getBackground() {
 		if (osBackground == null) {
-			System.out.println("Remapping colour!");
+			logger.log("Remapping colour!");
 			osBackground = new Color(settings.colourBackground[0], settings.colourBackground[1], settings.colourBackground[2]);
 		}
 		return osBackground;
@@ -81,7 +81,7 @@ public class OS implements IArcadeGame {
 
 	public Color getForeground() {
 		if (osForeground == null) {
-			System.out.println("Remapping colour!");
+			logger.log("Remapping colour!");
 			osForeground = new Color(settings.colourForeground[0], settings.colourForeground[1], settings.colourForeground[2]);
 		}
 		return osForeground;
@@ -256,13 +256,13 @@ public class OS implements IArcadeGame {
 	public void registerKey(IProgram toProgram, int key) {
 		if (keys.containsKey(toProgram.getTitle()) && keys.get(toProgram.getTitle()) != null) {
 			keys.get(toProgram.getTitle()).add(key);
-			System.out.println("Registered key! " + toProgram.getTitle() + " " + key);
+			logger.log("Registered key! " + toProgram.getTitle() + " " + key);
 		}
 		else {
 			ArrayList<Integer> keyz = new ArrayList<Integer>();
 			keyz.add(key);
 			keys.put(toProgram.getTitle(), keyz);
-			System.out.println("Registered key, created new keyset! " + toProgram.getTitle() + " " + key);
+			logger.log("Registered key, created new keyset! " + toProgram.getTitle() + " " + key);
 		}
 	}
 
@@ -270,7 +270,7 @@ public class OS implements IArcadeGame {
 		if (keys.containsKey(toProgram.getTitle())) {
 			if (keys.get(toProgram).contains(key)) {
 				keys.get(toProgram).remove(key);
-				System.out.println("Unregistered key! " + toProgram.getTitle() + " " + key);
+				logger.log("Unregistered key! " + toProgram.getTitle() + " " + key);
 			}
 		}
 	}
