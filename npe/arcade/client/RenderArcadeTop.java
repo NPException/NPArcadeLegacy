@@ -56,15 +56,13 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			arcade.isImageChanged = false;
 		}
 
-		glDisable(GL_LIGHTING);
-		//OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
-
 		glPushMatrix();
+		glDisable(GL_LIGHTING);
 		glRotatef(25f, -1f, 0f, 0f);
 		glTranslatef(0f, 0f, 0.1f);
 		glDisable(GL_CULL_FACE);
 
-		// Render default background //.toUppercase();
+		// Render default background //
 		glPushMatrix();
 		Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
@@ -78,8 +76,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		tessellator.draw();
 		glPopMatrix();
 
-		//glDisable(GL_LIGHTING);
-		// render game screen //.toUppercase();
+		// render game screen //
 		glPushMatrix();
 		glTranslatef(-0.005f, -0.06f, -0.005f);
 		tessellator = Tessellator.instance;
@@ -89,9 +86,11 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		ty = -0.39d;
 		w = 0.752d;
 		h = 0.96d;
+		float r = 0f, g = 0f, b = 0f;
+
+		// broken effect test
 		Random rand = new Random();
 		int c = rand.nextInt(3);
-		float r = 0f, g = 0f, b = 0f;
 		boolean doBrokenEffect1 = false;
 		if (doBrokenEffect1) {
 			switch (c) {
@@ -110,6 +109,8 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			r = g = b = 1f;
 		}
 
+
+		// render quad
 		tessellator.setColorRGBA_F(r, g, b, 1F);
 		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
 		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
@@ -120,15 +121,13 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 
 		glEnable(GL_CULL_FACE);
 		glPopMatrix();
-		glEnable(GL_LIGHTING);
 
-		Tessellator.instance.setColorRGBA_F(1f, 1f, 1f, 1f);
 		// RENDER CASING //
+		glEnable(GL_LIGHTING);
+		Tessellator.instance.setColorRGBA_F(1f, 1f, 1f, 1f);
 		Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
 		modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-
 		glPopMatrix();
-
 		glPopMatrix();
 	}
 
