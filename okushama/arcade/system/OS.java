@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.GuiIngameForge;
@@ -27,9 +29,13 @@ import okushama.arcade.system.programs.nes.ProgramNESEmulator;
 
 import org.lwjgl.input.Keyboard;
 
+import cpw.mods.fml.common.FMLLog;
+
 public class OS implements IArcadeGame {
 
 	private static OSSettings settings = OSSettings.load();
+	public static OSLogger logger = new OSLogger("okushama OS");
+	
 	public IArcadeMachine machine;
 	public BufferedImage gameIcon;
 	public String currentPlayer = null;
@@ -74,7 +80,6 @@ public class OS implements IArcadeGame {
 	
 	public Color getBackground(){
 		if(osBackground == null){
-			System.out.println("Remapping colour!");
 			osBackground = new Color(settings.colourBackground[0], settings.colourBackground[1], settings.colourBackground[2]);
 		}
 		return osBackground;
@@ -82,7 +87,6 @@ public class OS implements IArcadeGame {
 	
 	public Color getForeground(){
 		if(osForeground == null){
-			System.out.println("Remapping colour!");
 			osForeground = new Color(settings.colourForeground[0], settings.colourForeground[1], settings.colourForeground[2]);
 		}
 		return osForeground;

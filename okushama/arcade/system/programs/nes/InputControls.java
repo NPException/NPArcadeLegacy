@@ -45,7 +45,7 @@ public class InputControls implements IKeyListener, ControllerInterface{
 	        }
 	        this.controllernum = player-1;
 	        setButtons();
-	        this.startEventQueue();
+	       // this.startEventQueue();
 	}
 	
 	public void output(final boolean state) {
