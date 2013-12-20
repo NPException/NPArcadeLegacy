@@ -5,14 +5,14 @@
 package com.grapeshot.halfnes;
 
 /**
- *
+ * 
  * @author Andrew
  */
 public interface ControllerInterface {
 
-    public void strobe();
+	public void strobe();
 
-    public void output(final boolean state);
+	public void output(final boolean state);
 
-    public int getbyte();
+	public int getbyte();
 }

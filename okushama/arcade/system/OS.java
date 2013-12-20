@@ -18,6 +18,7 @@ import npe.arcade.interfaces.IArcadeMachine;
 import okushama.arcade.system.programs.IProgram;
 import okushama.arcade.system.programs.ProgramNotepad;
 import okushama.arcade.system.programs.ProgramReloadSettings;
+import okushama.arcade.system.programs.gb.ProgramGBDirectory;
 import okushama.arcade.system.programs.nes.ProgramNESDirectory;
 
 import org.lwjgl.input.Keyboard;
@@ -43,6 +44,7 @@ public class OS implements IArcadeGame {
 	@Override
 	public void initialize() {
 		programs.add(new ProgramNESDirectory(this));
+		programs.add(new ProgramGBDirectory(this));
 		programs.add(new ProgramReloadSettings(this));
 		programs.add(new ProgramNotepad(this));
 		Integer[] keyList = new Integer[] { Keyboard.KEY_DOWN, Keyboard.KEY_UP, Keyboard.KEY_RETURN };

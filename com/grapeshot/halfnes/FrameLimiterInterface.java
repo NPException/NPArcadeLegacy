@@ -5,12 +5,12 @@
 package com.grapeshot.halfnes;
 
 /**
- *
+ * 
  * @author Andrew
  */
 public interface FrameLimiterInterface {
 
-    public void sleep();
+	public void sleep();
 
-    public void sleepFixed();
+	public void sleepFixed();
 }
