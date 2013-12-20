@@ -20,7 +20,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.GuiIngameForge;
 import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
@@ -110,33 +109,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		game = new CrapRacer();
 		game.setArcadeMachine(this);
 		game.initialize();
-	}
-
-	public float originalFov = -999;
-	public float zoomFov = -0.5f;
-
-	public void updatePlayerFOV(String playerName) {
-		float currentFov = Minecraft.getMinecraft().gameSettings.fovSetting;
-		if (currentFov >= 0 && originalFov == -999) {
-			originalFov = currentFov;
-		}
-		if (Minecraft.getMinecraft().thePlayer.username.equals(playerName)) {
-			if (currentFov > zoomFov) {
-				currentFov -= 0.05;
-				if (GuiIngameForge.renderCrosshairs) {
-					GuiIngameForge.renderCrosshairs = false;
-				}
-			}
-		}
-		else {
-			if (currentFov < originalFov) {
-				currentFov += 0.05;
-				if (!GuiIngameForge.renderCrosshairs) {
-					GuiIngameForge.renderCrosshairs = true;
-				}
-			}
-		}
-		Minecraft.getMinecraft().gameSettings.fovSetting = currentFov;
 	}
 
 	/**

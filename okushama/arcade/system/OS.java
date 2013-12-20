@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.GuiIngameForge;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeMachine;
 import okushama.arcade.system.programs.IProgram;
+import okushama.arcade.system.programs.ProgramNotepad;
 import okushama.arcade.system.programs.ProgramReloadSettings;
 import okushama.arcade.system.programs.nes.ProgramNESDirectory;
 
@@ -44,6 +44,7 @@ public class OS implements IArcadeGame {
 	public void initialize() {
 		programs.add(new ProgramNESDirectory(this));
 		programs.add(new ProgramReloadSettings(this));
+		programs.add(new ProgramNotepad(this));
 		Integer[] keyList = new Integer[] { Keyboard.KEY_DOWN, Keyboard.KEY_UP, Keyboard.KEY_RETURN };
 		keys.put("os", Arrays.asList(keyList));
 	}
@@ -224,7 +225,7 @@ public class OS implements IArcadeGame {
 	@Override
 	public void setCurrentPlayerName(String playername) {
 		currentPlayer = playername;
-		if (Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)) {
+		/*if (Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)) {
 			float zoomSize = -0.5f;
 			if (Minecraft.getMinecraft().gameSettings.fovSetting > zoomSize) {
 				Minecraft.getMinecraft().gameSettings.fovSetting -= 0.05;
@@ -240,13 +241,19 @@ public class OS implements IArcadeGame {
 					GuiIngameForge.renderCrosshairs = true;
 				}
 			}
-		}
+		}*/
 	}
 
 	public void loadProgram(IProgram p) {
 		currentProgram = p;
 		currentProgram.load();
 		currentProgram.initialize();
+	}
+
+	public void registerKeys(IProgram toProgram, int... keys){
+		for(int i : keys){
+			registerKey(toProgram, i);
+		}
 	}
 
 	public void registerKey(IProgram toProgram, int key) {

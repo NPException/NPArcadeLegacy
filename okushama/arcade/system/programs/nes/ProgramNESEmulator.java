@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
+import npe.arcade.tileentities.TileEntityArcade;
 import okushama.arcade.system.OS;
 import okushama.arcade.system.programs.IProgram;
 
@@ -84,7 +85,7 @@ public class ProgramNESEmulator implements IProgram {
 					"Back   -  Quit Rom",
 					"",
 					"Press 'ENTER' to load",
-					"Press  'BACK' to quit" };
+			"Press  'BACK' to quit" };
 			for (int i = 0; i < output.length; i++) {
 				g.drawString(output[i], 10, 20 + (i * 16));
 			}
@@ -122,9 +123,15 @@ public class ProgramNESEmulator implements IProgram {
 		}
 		else {
 			if (nes.runEmulation) {
-				SwingAudioImpl.outputvol = 0f;
-				//nes.quit();
-				//this.nesStarted = false;
+				int arcadeX = ((TileEntityArcade)getOS().machine).xCoord;
+				int arcadeY = ((TileEntityArcade)getOS().machine).yCoord;
+				int arcadeZ = ((TileEntityArcade)getOS().machine).zCoord;
+				float dist = (float)Minecraft.getMinecraft().thePlayer.getDistance(arcadeX, arcadeY, arcadeZ);
+				float vol = Minecraft.getMinecraft().gameSettings.musicVolume-(dist/15);
+				if(vol < 0) {
+					vol = 0;
+				}
+				SwingAudioImpl.outputvol = vol;
 			}
 		}
 	}
