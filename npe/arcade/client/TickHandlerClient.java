@@ -14,6 +14,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.GuiIngameForge;
 import npe.arcade.entities.EntityArcadeSeat;
+import npe.arcade.items.Items;
 
 import org.lwjgl.input.Keyboard;
 
@@ -76,8 +77,8 @@ public class TickHandlerClient implements ITickHandler{
 		if(type.equals(EnumSet.of(TickType.PLAYER))){
 			try{
 				EntityClientPlayerMP player = (EntityClientPlayerMP)tickData[0];
-				if(player.ridingEntity instanceof EntityArcadeSeat){
-					updatePlayerFOV(true);
+				if(player.ridingEntity instanceof EntityArcadeSeat ||( player.getCurrentEquippedItem() != null && player.getCurrentEquippedItem().itemID == Items.joystick.itemID)){
+					//updatePlayerFOV(true);
 					if(canDisablePlayerInput){
 						if(getClientPlayerInputEnabled()){
 							System.out.println("Disabled player input!");
@@ -85,7 +86,7 @@ public class TickHandlerClient implements ITickHandler{
 						}
 					}
 				}else{
-					updatePlayerFOV(false);
+					//updatePlayerFOV(false);
 
 					if(canDisablePlayerInput){
 						if(!getClientPlayerInputEnabled()){

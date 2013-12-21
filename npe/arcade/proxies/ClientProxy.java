@@ -9,6 +9,8 @@ import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.tileentities.TileEntityArcade;
 import npe.arcade.tileentities.TileEntityArcadeBase;
 import npe.arcade.tileentities.TileEntityArcadeStool;
+import okushama.arcade.client.RenderMonitor;
+import okushama.arcade.tileentities.TileEntityMonitor;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
@@ -25,6 +27,7 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcade.class, new RenderArcadeTop());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcadeBase.class, new RenderArcadeBase());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityArcadeStool.class, new RenderArcadeStool());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMonitor.class, new RenderMonitor());
 		RenderingRegistry.registerEntityRenderingHandler(EntityArcadeSeat.class, new RenderArcadeSeat());
 		TickRegistry.registerTickHandler(new TickHandlerClient(), Side.CLIENT);
 		//MinecraftForgeClient.registerItemRenderer(BlockInfo.ARCADE_ID, new RenderArcadeTechne());
