@@ -37,19 +37,24 @@ public class ItemArcadeSeat extends Item {
 
 			if (world.isAirBlock(posX, posY, posZ)) {
 
-				EntityArcadeSeat seat = new EntityArcadeSeat(world);
+				if (player.isSneaking()) {
+					world.setBlock(posX, posY, posZ, BlockInfo.ARCADE_STOOL_ID);
+				}
+				else {
+					EntityArcadeSeat seat = new EntityArcadeSeat(world);
 
-				seat.posX = posX + 0.5;
-				seat.posY = posY;
-				seat.posZ = posZ + 0.5;
+					seat.posX = posX + 0.5;
+					seat.posY = posY;
+					seat.posZ = posZ + 0.5;
 
-				// check adjacent blocks for arcademachine and occupy before spawning
-				tryOccupy(world, posX + 1, posY + 1, posZ, 1, seat);
-				tryOccupy(world, posX - 1, posY + 1, posZ, 3, seat);
-				tryOccupy(world, posX, posY + 1, posZ + 1, 2, seat);
-				tryOccupy(world, posX, posY + 1, posZ - 1, 0, seat);
+					// check adjacent blocks for arcademachine and occupy before spawning
+					tryOccupy(world, posX + 1, posY + 1, posZ, 1, seat);
+					tryOccupy(world, posX - 1, posY + 1, posZ, 3, seat);
+					tryOccupy(world, posX, posY + 1, posZ + 1, 2, seat);
+					tryOccupy(world, posX, posY + 1, posZ - 1, 0, seat);
 
-				world.spawnEntityInWorld(seat);
+					world.spawnEntityInWorld(seat);
+				}
 
 				if (!player.capabilities.isCreativeMode) {
 					stack.stackSize--;
