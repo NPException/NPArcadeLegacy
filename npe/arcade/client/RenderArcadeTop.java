@@ -3,7 +3,6 @@ package npe.arcade.client;
 import static org.lwjgl.opengl.GL11.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -46,14 +45,16 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glTranslatef(0f, 1f, 0f);
 
 		// SCREEN RENDERING //
-		if (arcade.textureSizeChanged || arcade.glTextureId == -1) {
-			TextureUtil.allocateTexture(arcade.getGlTextureId(true), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
-			arcade.textureSizeChanged = false;
-		}
-		if (arcade.isImageChanged) {
-			TextureUtil.uploadTexture(arcade.getGlTextureId(false), arcade.getScreenImageData(), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
-			arcade.isImageChanged = false;
-		}
+
+		// // keep this stuff here, until it is safe to say that uploading the texture outside of the render thread works.
+		//		if (arcade.textureSizeChanged || arcade.glTextureId == -1) {
+		//			TextureUtil.allocateTexture(arcade.getGlTextureId(true), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
+		//			arcade.textureSizeChanged = false;
+		//		}
+		//		if (arcade.isImageChanged) {
+		//			TextureUtil.uploadTexture(arcade.getGlTextureId(false), arcade.getScreenImageData(), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
+		//			arcade.isImageChanged = false;
+		//		}
 
 		glPushMatrix();
 		glDisable(GL_LIGHTING);

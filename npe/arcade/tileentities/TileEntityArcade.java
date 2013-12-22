@@ -45,7 +45,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
 	public int glTextureId = -1;
-	public boolean textureSizeChanged = true;
 
 	private BufferedImage screen;
 	private int[] screenData;
@@ -174,7 +173,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 				g.drawImage(screenframeImage, 0, 0, textureSize, textureSize, null);
 			}
 
-			isImageChanged = true;
+			TextureUtil.uploadTexture(getGlTextureId(false), getScreenImageData(), screen.getWidth(), screen.getHeight());
 		}
 	}
 
@@ -194,7 +193,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		gameOffsetX = (neededWidth > neededHeight) ? 0 : textureSize / 2 - neededWidth / 2;
 		gameOffsetY = (neededHeight > neededWidth) ? 0 : textureSize / 2 - neededHeight / 2;
 
-		textureSizeChanged = true;
+		TextureUtil.allocateTexture(getGlTextureId(true), screen.getWidth(), screen.getHeight());
 	}
 
 	@Override
