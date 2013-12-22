@@ -15,89 +15,89 @@ import npe.arcade.interfaces.IArcadeMachine;
 
 public abstract class AbstractArcadeGame implements IArcadeGame {
 
-    private boolean[] input;
+	private boolean[] input;
 
-    protected IArcadeMachine arcadeMachine;
-    protected String playername;
+	protected IArcadeMachine arcadeMachine;
+	protected String playername;
 
-    protected BufferedImage gameGraphics;
-    protected BufferedImage gameIcon;
+	protected BufferedImage gameGraphics;
+	protected BufferedImage gameIcon;
 
-    protected Random rand;
+	protected Random rand;
 
-    @Override
-    public abstract String getTitle();
+	@Override
+	public abstract String getTitle();
 
-    @Override
-    public BufferedImage getGameIcon() {
-        //        if (gameIcon == null) {
-        // just a random default icon
-        gameIcon = new BufferedImage(32, 16, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D)gameIcon.getGraphics();
-        g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
-        g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-        g.setBackground(new Color(255, 255, 255, 0));
-        g.clearRect(0, 0, 32, 16);
-        g.setColor(Color.WHITE);
-        g.setStroke(new BasicStroke(1.5f));
-        g.drawRoundRect(1, 1, 30, 14, 3, 3);
-        g.drawRoundRect(5, 5, 22, 6, 1, 1);
-        g.setColor(Color.ORANGE);
-        g.drawRoundRect(3, 3, 26, 10, 2, 2);
-        //        }
-        return gameIcon;
-    }
+	@Override
+	public BufferedImage getGameIcon() {
+		//        if (gameIcon == null) {
+		// just a random default icon
+		gameIcon = new BufferedImage(32, 16, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D)gameIcon.getGraphics();
+		g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+		g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+		g.setBackground(new Color(255, 255, 255, 0));
+		g.clearRect(0, 0, 32, 16);
+		g.setColor(Color.WHITE);
+		g.setStroke(new BasicStroke(1.5f));
+		g.drawRoundRect(1, 1, 30, 14, 3, 3);
+		g.drawRoundRect(5, 5, 22, 6, 1, 1);
+		g.setColor(Color.ORANGE);
+		g.drawRoundRect(3, 3, 26, 10, 2, 2);
+		//        }
+		return gameIcon;
+	}
 
-    @Override
-    public void setArcadeMachine(IArcadeMachine arcadeMachine) {
-        this.arcadeMachine = arcadeMachine;
-    }
+	@Override
+	public void setArcadeMachine(IArcadeMachine arcadeMachine) {
+		this.arcadeMachine = arcadeMachine;
+	}
 
-    @Override
-    public void setCurrentPlayerName(String playername) {
-        this.playername = playername;
-    }
+	@Override
+	public void setCurrentPlayerName(String playername) {
+		this.playername = playername;
+	}
 
-    @Override
-    public void initialize() {
-        if (gameGraphics == null) {
-            gameGraphics = new BufferedImage(96, 128, BufferedImage.TYPE_INT_ARGB);
-        }
-        if (rand == null) {
-            rand = new Random();
-        }
-        rand.setSeed("NPExceptional Seed".hashCode());
-        if (input == null) {
-            input = new boolean[KEY.values().length];
-        }
-    }
+	@Override
+	public void initialize() {
+		if (gameGraphics == null) {
+			gameGraphics = new BufferedImage(96, 128, BufferedImage.TYPE_INT_ARGB);
+		}
+		if (rand == null) {
+			rand = new Random();
+		}
+		rand.setSeed("NPExceptional Seed".hashCode());
+		if (input == null) {
+			input = new boolean[KEY.values().length];
+		}
+	}
 
-    @Override
-    public void unload() {}
+	@Override
+	public void unload() {}
 
-    @Override
-    public void doGameTick(List<KEY> input) {
-        Arrays.fill(this.input, false);
-        for (KEY key : input) {
-            this.input[key.id] = true;
-        }
-        gameTick();
+	@Override
+	public void doGameTick(List<KEY> input) {
+		Arrays.fill(this.input, false);
+		for (KEY key : input) {
+			this.input[key.id] = true;
+		}
+		gameTick();
 
-        // TODO: render some fancy overlay
-    }
+		// TODO: render some fancy overlay
+	}
 
-    /**
-     * The game tick is done here. The input is already done and available via isKeyDown(KEY);
-     */
-    public abstract void gameTick();
+	/**
+	 * The game tick is done here. The input is already done and available via isKeyDown(KEY);
+	 */
+	public abstract void gameTick();
 
-    public boolean isKeyDown(KEY key) {
-        return input[key.id];
-    }
+	public boolean isKeyDown(KEY key) {
+		return input[key.id];
+	}
 
-    @Override
-    public BufferedImage renderGraphics() {
-        return gameGraphics;
-    }
+	@Override
+	public BufferedImage renderGraphics() {
+		return gameGraphics;
+	}
 
 }

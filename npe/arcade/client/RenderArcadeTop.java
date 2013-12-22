@@ -109,7 +109,6 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 			r = g = b = 1f;
 		}
 
-
 		// render quad
 		tessellator.setColorRGBA_F(r, g, b, 1F);
 		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);

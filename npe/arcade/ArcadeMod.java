@@ -22,58 +22,58 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 @NetworkMod(channels = { ModInfo.CHANNEL }, clientSideRequired = true, serverSideRequired = true, packetHandler = PacketHandler.class)
 public class ArcadeMod {
 
-    @Instance(ModInfo.MOD_ID)
-    public static ArcadeMod instance;
+	@Instance(ModInfo.MOD_ID)
+	public static ArcadeMod instance;
 
-    @SidedProxy(serverSide = "npe.arcade.proxies.CommonProxy", clientSide = "npe.arcade.proxies.ClientProxy")
-    public static CommonProxy proxy;
+	@SidedProxy(serverSide = "npe.arcade.proxies.CommonProxy", clientSide = "npe.arcade.proxies.ClientProxy")
+	public static CommonProxy proxy;
 
-    /**
-     * Init Items, Blocks, Sounds, Renderers, and Config here
-     * 
-     * @param event
-     */
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        ConfigHandler.init(event.getSuggestedConfigurationFile());
-        Items.init();
-        Blocks.init();
+	/**
+	 * Init Items, Blocks, Sounds, Renderers, and Config here
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		ConfigHandler.init(event.getSuggestedConfigurationFile());
+		Items.init();
+		Blocks.init();
 
-        proxy.initSounds();
-        proxy.initRenderers();
-    }
+		proxy.initSounds();
+		proxy.initRenderers();
+	}
 
-    /**
-     * Add names and register recipes here
-     * 
-     * @param event
-     */
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-        Items.addNames();
-        Items.registerRecipes();
+	/**
+	 * Add names and register recipes here
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	public void init(FMLInitializationEvent event) {
+		Items.addNames();
+		Items.registerRecipes();
 
-        Blocks.addNames();
-        Blocks.registerTileEntities();
-        Entities.init();
+		Blocks.addNames();
+		Blocks.registerTileEntities();
+		Entities.init();
 
-        LanguageRegistry.instance().addStringLocalization("itemGroup.npe.arcade.tab", ModInfo.NAME);
-    }
+		LanguageRegistry.instance().addStringLocalization("itemGroup.npe.arcade.tab", ModInfo.NAME);
+	}
 
-    /**
-     * I have no idea what I could do here...
-     * 
-     * @param event
-     */
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
+	/**
+	 * I have no idea what I could do here...
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event) {
 
-    }
+	}
 
-    public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("npe.arcade.tab") {
-        @Override
-        public ItemStack getIconItemStack() {
-            return new ItemStack(Items.arcade);
-        }
-    };
+	public static final CreativeTabs CREATIVE_TAB = new CreativeTabs("npe.arcade.tab") {
+		@Override
+		public ItemStack getIconItemStack() {
+			return new ItemStack(Items.arcade);
+		}
+	};
 }
