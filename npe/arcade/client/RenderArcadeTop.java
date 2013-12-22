@@ -1,9 +1,6 @@
 package npe.arcade.client;
 
 import static org.lwjgl.opengl.GL11.*;
-
-import java.util.Random;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -20,12 +17,10 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 
 	//The model of your block
 	private final ModelArcadeTop modelTop;
-	private final ModelArcadeScreen modelScreen;
 	private static final ResourceLocation textureTop = new ResourceLocation("npearcade", "textures/models/arcade.png");
 
 	public RenderArcadeTop() {
 		modelTop = new ModelArcadeTop();
-		modelScreen = new ModelArcadeScreen();
 	}
 
 	@Override
@@ -51,8 +46,12 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glTranslatef(0f, 1f, 0f);
 
 		// SCREEN RENDERING //
+		if (arcade.textureSizeChanged || arcade.glTextureId == -1) {
+			TextureUtil.allocateTexture(arcade.getGlTextureId(true), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
+			arcade.textureSizeChanged = false;
+		}
 		if (arcade.isImageChanged) {
-			TextureUtil.uploadTextureImageAllocate(arcade.getGlTextureId(), arcade.getScreenImage(), false, false);
+			TextureUtil.uploadTexture(arcade.getGlTextureId(false), arcade.getScreenImageData(), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
 			arcade.isImageChanged = false;
 		}
 
@@ -80,37 +79,37 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glPushMatrix();
 		glTranslatef(-0.005f, -0.06f, -0.005f);
 		tessellator = Tessellator.instance;
-		glBindTexture(GL_TEXTURE_2D, arcade.getGlTextureId());
+		glBindTexture(GL_TEXTURE_2D, arcade.getGlTextureId(false));
 		tessellator.startDrawingQuads();
 		tx = -0.37d;
 		ty = -0.39d;
 		w = 0.752d;
 		h = 0.96d;
-		float r = 0f, g = 0f, b = 0f;
-
-		// broken effect test
-		Random rand = new Random();
-		int c = rand.nextInt(3);
-		boolean doBrokenEffect1 = false;
-		if (doBrokenEffect1) {
-			switch (c) {
-				case 0:
-					r = 1f;
-					break;
-				case 1:
-					g = 1f;
-					break;
-				case 2:
-					b = 1f;
-					break;
-			}
-		}
-		else {
-			r = g = b = 1f;
-		}
+		//		float r = 0f, g = 0f, b = 0f;
+		//
+		//		// broken effect test
+		//		Random rand = new Random();
+		//		int c = rand.nextInt(3);
+		//		boolean doBrokenEffect1 = false;
+		//		if (doBrokenEffect1) {
+		//			switch (c) {
+		//				case 0:
+		//					r = 1f;
+		//					break;
+		//				case 1:
+		//					g = 1f;
+		//					break;
+		//				case 2:
+		//					b = 1f;
+		//					break;
+		//			}
+		//		}
+		//		else {
+		//			r = g = b = 1f;
+		//		}
 
 		// render quad
-		tessellator.setColorRGBA_F(r, g, b, 1F);
+		tessellator.setColorRGBA_F(1f, 1f, 1f, 1F);
 		tessellator.addVertexWithUV(tx + w, ty, 0, 1, 0);
 		tessellator.addVertexWithUV(tx + w, ty + h, 0, 1, 1);
 		tessellator.addVertexWithUV(tx, ty + h, 0, 0, 1);
@@ -129,5 +128,4 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glPopMatrix();
 		glPopMatrix();
 	}
-
 }

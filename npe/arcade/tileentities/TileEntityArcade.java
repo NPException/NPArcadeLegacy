@@ -39,14 +39,16 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	private final int[] SUGGESTED_SCREEN_SIZE = { 96, 128 };
 
-	private int screenWidth, screenHeight;
+	private int lastGameWidth, lastGameHeight, textureSize;
 	private int gameOffsetX, gameOffsetY;
 
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
-	private int glTextureId = -1;
+	public int glTextureId = -1;
+	public boolean textureSizeChanged = true;
 
 	private BufferedImage screen;
+	private int[] screenData;
 	public boolean isImageChanged = true;
 
 	private IArcadeGame game;
@@ -62,9 +64,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	 * Constructor
 	 */
 	public TileEntityArcade() {
-		screen = new BufferedImage(SUGGESTED_SCREEN_SIZE[0], SUGGESTED_SCREEN_SIZE[1], BufferedImage.TYPE_INT_ARGB);
-		screenWidth = screen.getWidth();
-		screenHeight = screen.getHeight();
 		try {
 			Resource resource = Minecraft.getMinecraft().getResourceManager().getResource(frameResource);
 			InputStream inputstream = resource.getInputStream();
@@ -162,17 +161,17 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 			int height = gameGraphics.getHeight();
 
 			// check if the resolution has changed or the screen isn't ready yet and create a new texture if necessary
-			if (screenWidth != width && screenHeight != height) {
+			if (screen == null || lastGameWidth != width && lastGameHeight != height) {
 				generateNewScreenTexture(width, height);
 			}
 
 			Graphics2D g = (Graphics2D)screen.getGraphics();
 			g.setBackground(BACKGROUND_COLOR);
-			g.clearRect(0, 0, screenWidth, screenHeight);
+			g.clearRect(0, 0, textureSize, textureSize);
 			g.drawImage(gameGraphics, gameOffsetX, gameOffsetY, null);
 
 			if (screenframeImage != null) {
-				g.drawImage(screenframeImage, 0, 0, screenWidth, screenHeight, null);
+				g.drawImage(screenframeImage, 0, 0, textureSize, textureSize, null);
 			}
 
 			isImageChanged = true;
@@ -181,21 +180,21 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	private void generateNewScreenTexture(int neededWidth, int neededHeight) {
 		// todo: generate texture with sizes of ^2
-		int textureSize;
 		if (neededHeight > neededWidth) {
 			textureSize = neededHeight;
-			screenHeight = neededHeight;
-			screenWidth = screenHeight;
 		}
 		else {
 			textureSize = neededWidth;
-			screenWidth = neededWidth;
-			screenHeight = screenWidth;
 		}
 		screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
 
-		gameOffsetX = (neededWidth > neededHeight) ? 0 : screenWidth / 2 - neededWidth / 2;
-		gameOffsetY = (neededHeight > neededWidth) ? 0 : screenHeight / 2 - neededHeight / 2;
+		lastGameHeight = neededHeight;
+		lastGameWidth = neededWidth;
+
+		gameOffsetX = (neededWidth > neededHeight) ? 0 : textureSize / 2 - neededWidth / 2;
+		gameOffsetY = (neededHeight > neededWidth) ? 0 : textureSize / 2 - neededHeight / 2;
+
+		textureSizeChanged = true;
 	}
 
 	@Override
@@ -225,9 +224,12 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	 * Getter and convenience methods
 	 */
 
-	public int getGlTextureId()
+	public int getGlTextureId(boolean forceNew)
 	{
-		if (glTextureId == -1) {
+		if (glTextureId == -1 || forceNew) {
+			if (glTextureId != -1) {
+				GL11.glDeleteTextures(glTextureId);
+			}
 			glTextureId = TextureUtil.glGenTextures();
 		}
 		return glTextureId;
@@ -235,6 +237,14 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	public BufferedImage getScreenImage() {
 		return screen;
+	}
+
+	public int[] getScreenImageData() {
+		if (screenData == null || screenData.length != screen.getWidth() * screen.getHeight()) {
+			screenData = new int[screen.getWidth() * screen.getHeight()];
+		}
+		screen.getRGB(0, 0, screen.getWidth(), screen.getHeight(), screenData, 0, screen.getWidth());
+		return screenData;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -248,6 +258,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	public void onChunkUnload() {
 		if (glTextureId != -1) {
 			GL11.glDeleteTextures(glTextureId);
+			glTextureId = -1;
 		}
 		if (worldObj.isRemote) {
 			game.unload();
