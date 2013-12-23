@@ -77,7 +77,8 @@ public class TickHandlerClient implements ITickHandler {
 		if (type.equals(EnumSet.of(TickType.PLAYER))) {
 			try {
 				EntityClientPlayerMP player = (EntityClientPlayerMP)tickData[0];
-				if (player.ridingEntity instanceof EntityArcadeSeat) {
+				if (player.ridingEntity instanceof EntityArcadeSeat
+						&& ((EntityArcadeSeat)player.ridingEntity).getOccupiedArcadeMachine() != null) {
 					updatePlayerFOV(true);
 					if (canDisablePlayerInput) {
 						if (getClientPlayerInputEnabled()) {
