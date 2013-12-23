@@ -43,6 +43,7 @@ public class OS implements IArcadeGame {
 
 	@Override
 	public void initialize() {
+		unload();
 		programs.add(new ProgramNESDirectory(this));
 		programs.add(new ProgramGBDirectory(this));
 		programs.add(new ProgramReloadSettings(this));
@@ -227,23 +228,23 @@ public class OS implements IArcadeGame {
 	@Override
 	public void setCurrentPlayerName(String playername) {
 		currentPlayer = playername;
-		/*if (Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)) {
-			float zoomSize = -0.5f;
-			if (Minecraft.getMinecraft().gameSettings.fovSetting > zoomSize) {
-				Minecraft.getMinecraft().gameSettings.fovSetting -= 0.05;
-				if (GuiIngameForge.renderCrosshairs) {
-					GuiIngameForge.renderCrosshairs = false;
-				}
-			}
-		}
-		else {
-			if (Minecraft.getMinecraft().gameSettings.fovSetting < 0) {
-				Minecraft.getMinecraft().gameSettings.fovSetting += 0.05;
-				if (!GuiIngameForge.renderCrosshairs) {
-					GuiIngameForge.renderCrosshairs = true;
-				}
-			}
-		}*/
+		//		if (Minecraft.getMinecraft().thePlayer.username.equals(currentPlayer)) {
+		//			float zoomSize = -0.5f;
+		//			if (Minecraft.getMinecraft().gameSettings.fovSetting > zoomSize) {
+		//				Minecraft.getMinecraft().gameSettings.fovSetting -= 0.05;
+		//				if (GuiIngameForge.renderCrosshairs) {
+		//					GuiIngameForge.renderCrosshairs = false;
+		//				}
+		//			}
+		//		}
+		//		else {
+		//			if (Minecraft.getMinecraft().gameSettings.fovSetting < 0) {
+		//				Minecraft.getMinecraft().gameSettings.fovSetting += 0.05;
+		//				if (!GuiIngameForge.renderCrosshairs) {
+		//					GuiIngameForge.renderCrosshairs = true;
+		//				}
+		//			}
+		//		}
 	}
 
 	public void loadProgram(IProgram p) {
@@ -252,8 +253,8 @@ public class OS implements IArcadeGame {
 		currentProgram.initialize();
 	}
 
-	public void registerKeys(IProgram toProgram, int... keys){
-		for(int i : keys){
+	public void registerKeys(IProgram toProgram, int... keys) {
+		for (int i : keys) {
 			registerKey(toProgram, i);
 		}
 	}
