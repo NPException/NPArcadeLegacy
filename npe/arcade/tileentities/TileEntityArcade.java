@@ -20,6 +20,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.event.world.WorldEvent;
 import npe.arcade.entities.EntityArcadeSeat;
 import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
@@ -63,6 +66,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	 * Constructor
 	 */
 	public TileEntityArcade() {
+		MinecraftForge.EVENT_BUS.register(this);
 		try {
 			Resource resource = Minecraft.getMinecraft().getResourceManager().getResource(frameResource);
 			InputStream inputstream = resource.getInputStream();
@@ -71,28 +75,19 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		catch (Exception ex) {}
 	}
 
-	/**
-	 * Try not to use this. This will get removed in the future.
-	 * 
-	 * @param newGame
-	 * @return
-	 */
-	@Deprecated
-	public TileEntityArcade setGame(IArcadeGame newGame) {
-		game = newGame;
-		game.setArcadeMachine(this);
-		game.initialize();
-		return this;
-	}
-
 	public void hitByPlayer(EntityPlayer player) {
 		// game will be null on Serverside
 		if (worldObj.isRemote) {
-			if (occupiedBySeat != null && occupiedBySeat.riddenByEntity == player) {
+			if (!player.isSneaking()) {
 				game.initialize();
 			}
-			if (player.isSneaking()) {
-				setGame(new OS());
+			else {
+				if (game != null) {
+					game.unload();
+				}
+				game = new OS();
+				game.setArcadeMachine(this);
+				game.initialize();
 			}
 		}
 		damage++;
@@ -254,18 +249,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	}
 
 	@Override
-	public void onChunkUnload() {
-		if (glTextureId != -1) {
-			GL11.glDeleteTextures(glTextureId);
-			glTextureId = -1;
-		}
-		if (worldObj.isRemote) {
-			game.unload();
-			game = null;
-		}
-	}
-
-	@Override
 	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {}
 
 	@Override
@@ -274,5 +257,46 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		onChunkUnload();
+		unoccupyByStool();
+	}
+
+	@Override
+	public void onChunkUnload() {
+		disposeTexture();
+		disposeGame();
+	}
+
+	private void disposeTexture() {
+		if (glTextureId != -1) {
+			GL11.glDeleteTextures(glTextureId);
+			glTextureId = -1;
+		}
+	}
+
+	private void disposeGame() {
+		if (worldObj.isRemote && game != null) {
+			game.unload();
+			game = null;
+		}
+	}
+
+	private void unoccupyByStool() {
+		if (occupiedBySeat != null) {
+			occupiedBySeat.occupyArcade(null);
+		}
+	}
+
+	@ForgeSubscribe
+	public void forgeWorldEventUnload(WorldEvent.Unload unloadEvent) {
+		if (worldObj.isRemote && unloadEvent.world == worldObj) {
+			onChunkUnload();
+			MinecraftForge.EVENT_BUS.unregister(this);
+		}
 	}
 }
