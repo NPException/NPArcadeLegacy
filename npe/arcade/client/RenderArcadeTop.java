@@ -3,6 +3,7 @@ package npe.arcade.client;
 import static org.lwjgl.opengl.GL11.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
@@ -80,6 +81,10 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glPushMatrix();
 		glTranslatef(-0.005f, -0.06f, -0.005f);
 		tessellator = Tessellator.instance;
+		if (arcade.isImageChanged) {
+			TextureUtil.uploadTexture(arcade.getGlTextureId(false), arcade.getScreenImageData(), arcade.getScreenTextureWidth(), arcade.getScreenTextureHeight());
+			arcade.isImageChanged = false;
+		}
 		glBindTexture(GL_TEXTURE_2D, arcade.getGlTextureId(false));
 		tessellator.startDrawingQuads();
 		tx = -0.37d;

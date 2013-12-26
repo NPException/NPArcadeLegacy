@@ -47,11 +47,11 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 
-	public int glTextureId = -1;
+	private int glTextureId = -1;
 
 	private BufferedImage screen;
 	private int[] screenData;
-	public boolean isImageChanged = true;
+	public boolean isImageChanged = false;
 
 	private IArcadeGame game;
 	private final List<KEY> keysPressedDown = new ArrayList<KEY>(12);
@@ -161,14 +161,14 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 			Graphics2D g = (Graphics2D)screen.getGraphics();
 			g.setBackground(BACKGROUND_COLOR);
-			g.clearRect(0, 0, textureSize, textureSize);
+			g.clearRect(0, 0, screen.getWidth(), screen.getHeight());
 			g.drawImage(gameGraphics, gameOffsetX, gameOffsetY, null);
 
 			if (screenframeImage != null) {
 				g.drawImage(screenframeImage, 0, 0, textureSize, textureSize, null);
 			}
 
-			TextureUtil.uploadTexture(getGlTextureId(false), getScreenImageData(), screen.getWidth(), screen.getHeight());
+			isImageChanged = true;
 		}
 	}
 
@@ -229,8 +229,12 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		return glTextureId;
 	}
 
-	public BufferedImage getScreenImage() {
-		return screen;
+	public int getScreenTextureWidth() {
+		return screen.getWidth();
+	}
+
+	public int getScreenTextureHeight() {
+		return screen.getHeight();
 	}
 
 	public int[] getScreenImageData() {
