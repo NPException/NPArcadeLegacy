@@ -2,6 +2,7 @@ package npe.arcade.blocks;
 
 import net.minecraft.block.Block;
 import npe.arcade.tileentities.TileEntityArcade;
+import npe.arcade.tileentities.TileEntityArcadeStool;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
@@ -29,5 +30,6 @@ public class Blocks {
 
 	public static void registerTileEntities() {
 		GameRegistry.registerTileEntity(TileEntityArcade.class, BlockInfo.ARCADE_TE_KEY);
+		GameRegistry.registerTileEntity(TileEntityArcadeStool.class, BlockInfo.ARCADE_STOOL_TE_KEY);
 	}
 }

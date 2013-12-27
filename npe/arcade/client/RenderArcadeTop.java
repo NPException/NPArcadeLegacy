@@ -130,7 +130,7 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		glEnable(GL_LIGHTING);
 		Tessellator.instance.setColorRGBA_F(1f, 1f, 1f, 1f);
 		Minecraft.getMinecraft().renderEngine.bindTexture(textureTop);
-		modelTop.render((Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		modelTop.render(arcade.hasActivePlayer(), (Entity)null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		glPopMatrix();
 		glPopMatrix();
 	}

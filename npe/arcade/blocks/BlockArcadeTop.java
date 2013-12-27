@@ -38,6 +38,11 @@ public class BlockArcadeTop extends BlockArcadeBase {
 	}
 
 	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
+		return super.onBlockActivated(world, x, y - 1, z, player, par6, par7, par8, par9);
+	}
+
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int facing = world.getBlockMetadata(x, y, z);
 		float[] bounds = { 0f, 0f, 0f, 1f, 1f, 1f };

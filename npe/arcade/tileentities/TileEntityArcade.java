@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.Resource;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.WorldEvent;
-import npe.arcade.entities.EntityArcadeSeat;
+import npe.arcade.entities.EntityArcadeStool;
 import npe.arcade.games.crapracer.CrapRacer;
 import npe.arcade.interfaces.IArcadeGame;
 import npe.arcade.interfaces.IArcadeGame.KEY;
@@ -53,11 +52,10 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	private int[] screenData;
 	public boolean isImageChanged = false;
 
+	private EntityPlayer player;
+
 	private IArcadeGame game;
 	private final List<KEY> keysPressedDown = new ArrayList<KEY>(12);
-
-	// this is synced by the seat itself.
-	private EntityArcadeSeat occupiedBySeat;
 
 	// Values that may need synchronization with the server
 	private int damage = 0;
@@ -93,8 +91,17 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		damage++;
 	}
 
-	public void setOccupiedBySeat(EntityArcadeSeat seat) {
-		occupiedBySeat = seat;
+	public void activateByPlayer(EntityPlayer player) {
+		if (worldObj.isRemote && player == Minecraft.getMinecraft().thePlayer) {
+			if (player.ridingEntity instanceof EntityArcadeStool) {
+				if (this.player == null) {
+					this.player = player;
+				}
+				else if (this.player == player) {
+					this.player = null;
+				}
+			}
+		}
 	}
 
 	// TODO: init game chooser here.
@@ -114,18 +121,23 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 			if (game == null) {
 				initMainMenu();
 			}
-			Entity user = (occupiedBySeat == null) ? null : occupiedBySeat.riddenByEntity;
 
 			// check the players name
 			String playerName = null;
-			if (user instanceof EntityPlayer) {
-				playerName = ((EntityPlayer)user).username;
+			if (player != null) {
+				// check if the player is still sitting on an arcade stool
+				if (player.ridingEntity instanceof EntityArcadeStool) {
+					playerName = player.username;
+				}
+				else {
+					player = null;
+				}
 			}
 			game.setCurrentPlayerName(playerName);
 			// updatePlayerFOV(playerName);
 			// collect pressed input keys
 			keysPressedDown.clear();
-			if (user == Minecraft.getMinecraft().thePlayer) {
+			if (player == Minecraft.getMinecraft().thePlayer) {
 				GameSettings settings = Minecraft.getMinecraft().gameSettings;
 				if (GameSettings.isKeyDown(settings.keyBindRight)) {
 					keysPressedDown.add(KEY.RIGHT);
@@ -246,6 +258,11 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	}
 
 	@SideOnly(Side.CLIENT)
+	public boolean hasActivePlayer() {
+		return player != null;
+	}
+
+	@SideOnly(Side.CLIENT)
 	@Override
 	public double getMaxRenderDistanceSquared() {
 		// TODO: make configurable
@@ -267,7 +284,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 	public void invalidate() {
 		super.invalidate();
 		onChunkUnload();
-		unoccupyByStool();
 	}
 
 	@Override
@@ -287,12 +303,6 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 		if (worldObj.isRemote && game != null) {
 			game.unload();
 			game = null;
-		}
-	}
-
-	private void unoccupyByStool() {
-		if (occupiedBySeat != null) {
-			occupiedBySeat.occupyArcade(null);
 		}
 	}
 

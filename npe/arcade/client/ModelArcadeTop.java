@@ -6,6 +6,7 @@
 
 package npe.arcade.client;
 
+import static org.lwjgl.opengl.GL11.*;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -15,7 +16,7 @@ public class ModelArcadeTop extends ModelBase {
 	//fields
 	ModelRenderer Backwall;
 	ModelRenderer GlassPane;
-	ModelRenderer Top_Bar;
+	ModelRenderer Top_Bar_active, Top_Bar_inactive;
 	ModelRenderer SideR1;
 	ModelRenderer SideR2;
 	ModelRenderer SideR3;
@@ -48,12 +49,20 @@ public class ModelArcadeTop extends ModelBase {
 		Backwall.setTextureSize(128, 128);
 		Backwall.mirror = true;
 		setRotation(Backwall, 0F, 0F, 0F);
-		Top_Bar = new ModelRenderer(this, 0, 62);
-		Top_Bar.addBox(0F, 0F, 0F, 12, 2, 2);
-		Top_Bar.setRotationPoint(-6F, -8F, 4F);
-		Top_Bar.setTextureSize(128, 128);
-		Top_Bar.mirror = true;
-		setRotation(Top_Bar, 0F, 0F, 0F);
+
+		Top_Bar_inactive = new ModelRenderer(this, 0, 62);
+		Top_Bar_inactive.addBox(0F, 0F, 0F, 12, 2, 2);
+		Top_Bar_inactive.setRotationPoint(-6F, -8F, 4F);
+		Top_Bar_inactive.setTextureSize(128, 128);
+		Top_Bar_inactive.mirror = true;
+		setRotation(Top_Bar_inactive, 0F, 0F, 0F);
+		Top_Bar_active = new ModelRenderer(this, 30, 62);
+		Top_Bar_active.addBox(0F, 0F, 0F, 12, 2, 2);
+		Top_Bar_active.setRotationPoint(-6F, -8F, 4F);
+		Top_Bar_active.setTextureSize(128, 128);
+		Top_Bar_active.mirror = true;
+		setRotation(Top_Bar_active, 0F, 0F, 0F);
+
 		SideR1 = new ModelRenderer(this, 100, 0);
 		SideR1.addBox(0F, 0F, 0F, 2, 4, 10);
 		SideR1.setRotationPoint(-8F, 4F, -4F);
@@ -135,16 +144,21 @@ public class ModelArcadeTop extends ModelBase {
 		setRotation(Stick, 0F, 0F, 0F);
 	}
 
-	@Override
-	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+	public void render(boolean hasActivePlayer, Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
 	{
 		super.render(entity, f, f1, f2, f3, f4, f5);
 		setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
 		Backwall.render(f5);
 
-		// make the top bar glowing and transparent
-		Top_Bar.render(f5);
+		if (hasActivePlayer) {
+			glDisable(GL_LIGHTING);
+			Top_Bar_active.render(f5);
+			glEnable(GL_LIGHTING);
+		}
+		else {
+			Top_Bar_inactive.render(f5);
+		}
 
 		SideR1.render(f5);
 		SideR2.render(f5);

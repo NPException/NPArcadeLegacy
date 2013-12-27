@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
@@ -21,6 +22,15 @@ public class BlockArcadeStool extends BlockContainer {
 		setStepSound(Block.soundWoodFootstep);
 		setUnlocalizedName(ItemInfo.ARCADE_SEAT_UNLOCALIZED_NAME);
 		setBlockBounds(0.2f, 0f, 0.2f, 0.8f, 0.625f, 0.8f);
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
+		TileEntity te = world.getBlockTileEntity(x, y, z);
+		if (te instanceof TileEntityArcadeStool) {
+			((TileEntityArcadeStool)te).activateByPlayer(player);
+		}
+		return true;
 	}
 
 	@Override

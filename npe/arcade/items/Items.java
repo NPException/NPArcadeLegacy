@@ -13,7 +13,7 @@ public class Items {
 
 	public static void init() {
 		arcade = new ItemArcade(ItemInfo.ARCADE_ID);
-		arcadeSeat = new ItemArcadeSeat(ItemInfo.ARCADE_SEAT_ID);
+		arcadeSeat = new ItemArcadeStool(ItemInfo.ARCADE_SEAT_ID);
 	}
 
 	public static void addNames() {

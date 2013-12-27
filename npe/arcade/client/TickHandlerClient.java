@@ -11,9 +11,10 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.GuiIngameForge;
-import npe.arcade.entities.EntityArcadeSeat;
+import npe.arcade.entities.EntityArcadeStool;
 
 import org.lwjgl.input.Keyboard;
 
@@ -77,8 +78,8 @@ public class TickHandlerClient implements ITickHandler {
 		if (type.equals(EnumSet.of(TickType.PLAYER))) {
 			try {
 				EntityClientPlayerMP player = (EntityClientPlayerMP)tickData[0];
-				if (player.ridingEntity instanceof EntityArcadeSeat
-						&& ((EntityArcadeSeat)player.ridingEntity).getOccupiedArcadeMachine() != null) {
+				if (player.ridingEntity instanceof EntityArcadeStool //&& ((EntityArcadeSeat)player.ridingEntity).getOccupiedArcadeMachine() != null
+				) {
 					updatePlayerFOV(true);
 					if (canDisablePlayerInput) {
 						if (getClientPlayerInputEnabled()) {
@@ -114,11 +115,13 @@ public class TickHandlerClient implements ITickHandler {
 	}
 
 	public void setClientPlayerInput(boolean enabled) {
+		GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
+
 		if (enabled) {
 			if (!playerKeys.backupKeys.isEmpty()) {
 				for (int i = 0; i < playerKeys.backupKeys.size(); i++) {
-					Minecraft.getMinecraft().gameSettings.setKeyBinding(i, playerKeys.backupKeys.get(i));
-					Minecraft.getMinecraft().gameSettings.keyBindings[i].pressed = false;
+					gameSettings.setKeyBinding(i, playerKeys.backupKeys.get(i));
+					gameSettings.keyBindings[i].pressed = false;
 				}
 			}
 			KeyBinding.resetKeyBindingArrayAndHash();
@@ -128,11 +131,12 @@ public class TickHandlerClient implements ITickHandler {
 			//if(playerKeys.backupKeys.isEmpty())
 			{
 				playerKeys.backupKeys.clear();
-				for (int i = 0; i < Minecraft.getMinecraft().gameSettings.keyBindings.length; i++) {
-					KeyBinding kb = Minecraft.getMinecraft().gameSettings.keyBindings[i];
+				for (int i = 0; i < gameSettings.keyBindings.length; i++) {
+					KeyBinding kb = gameSettings.keyBindings[i];
+					gameSettings.keyBindings[i].pressed = false;
 					playerKeys.backupKeys.add(kb.keyCode);
-					if (!kb.equals(Minecraft.getMinecraft().gameSettings.keyBindSneak)) {
-						Minecraft.getMinecraft().gameSettings.setKeyBinding(i, Keyboard.KEY_NONE);
+					if (!kb.equals(gameSettings.keyBindSneak) && !kb.equals(gameSettings.keyBindUseItem)) {
+						gameSettings.setKeyBinding(i, Keyboard.KEY_NONE);
 					}
 				}
 			}

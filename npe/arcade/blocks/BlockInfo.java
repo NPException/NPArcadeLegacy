@@ -18,10 +18,14 @@ public class BlockInfo {
 
 	public static final String ARCADE_TE_KEY = "arcadeTileEntity";
 
+	// STOOL //
+
 	public static int ARCADE_STOOL_ID;
 	public static final String ARCADE_STOOL_KEY = "ArcadeStool";
 	public static final int ARCADE_STOOL_DEFAULT_ID = 2077;
 
 	public static final String ARCADE_STOOL_UNLOCALIZED_NAME = "arcade.stool";
 	public static final String ARCADE_STOOL_NAME = "Arcade Machine Stool";
+
+	public static final String ARCADE_STOOL_TE_KEY = "arcadeStoolTileEntity";
 }
