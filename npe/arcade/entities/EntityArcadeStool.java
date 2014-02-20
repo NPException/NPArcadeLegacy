@@ -55,6 +55,12 @@ public class EntityArcadeStool extends Entity {
 		return 0.5;
 	}
 
+	@Override
+	public void setPositionAndRotation2(double x, double y, double z, float par7, float par8, int par9) {
+		// This fixes a bug where the player is shifted upwards sometimes, when sitting on the stool
+		setPosition(x, y, z);
+	}
+
 	//
 
 	@Override
