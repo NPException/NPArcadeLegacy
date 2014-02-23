@@ -64,12 +64,12 @@ public class ProgramNESEmulator implements IProgram {
 		}
 		if (gameIcon == null || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().res.x, getOS().res.y, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().resX, getOS().resY);
+			g.fillRect(0, 0, getOS().res.x, getOS().res.y);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			String[] output = {
@@ -85,7 +85,7 @@ public class ProgramNESEmulator implements IProgram {
 					"Back   -  Quit Rom",
 					"",
 					"Press 'ENTER' to load",
-			"Press  'BACK' to quit" };
+					"Press  'BACK' to quit" };
 			for (int i = 0; i < output.length; i++) {
 				g.drawString(output[i], 10, 20 + (i * 16));
 			}
@@ -127,8 +127,8 @@ public class ProgramNESEmulator implements IProgram {
 				int arcadeY = ((TileEntityArcade)getOS().machine).yCoord;
 				int arcadeZ = ((TileEntityArcade)getOS().machine).zCoord;
 				float dist = (float)Minecraft.getMinecraft().thePlayer.getDistance(arcadeX, arcadeY, arcadeZ);
-				float vol = Minecraft.getMinecraft().gameSettings.musicVolume-(dist/15);
-				if(vol < 0) {
+				float vol = Minecraft.getMinecraft().gameSettings.musicVolume - (dist / 15);
+				if (vol < 0) {
 					vol = 0;
 				}
 				SwingAudioImpl.outputvol = vol;

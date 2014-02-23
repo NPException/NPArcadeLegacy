@@ -6,8 +6,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import npe.arcade.interfaces.IArcadeGame;
@@ -15,13 +16,14 @@ import npe.arcade.interfaces.IArcadeMachine;
 
 public abstract class AbstractArcadeGame implements IArcadeGame {
 
-	private boolean[] input;
+	private Map<KEY, Boolean> input;
 
 	protected IArcadeMachine arcadeMachine;
 	protected String playername;
 
 	protected BufferedImage gameGraphics;
-	protected int[] gameSize = { 96, 128 };
+	protected Size gameSize = new Size(96, 128);
+	private final Size logoSize = new Size(32, 16);
 	protected BufferedImage gameIcon;
 
 	protected Random rand;
@@ -30,10 +32,10 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	public abstract String getTitle();
 
 	@Override
-	public BufferedImage getGameIcon() {
+	public int[] getGameIcon() {
 		//        if (gameIcon == null) {
 		// just a random default icon
-		gameIcon = new BufferedImage(32, 16, BufferedImage.TYPE_INT_ARGB);
+		gameIcon = new BufferedImage(logoSize.x, logoSize.y, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 		g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 		g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
@@ -46,7 +48,12 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 		g.setColor(Color.ORANGE);
 		g.drawRoundRect(3, 3, 26, 10, 2, 2);
 		//        }
-		return gameIcon;
+		return gameIcon.getRGB(0, 0, logoSize.x, logoSize.y, null, 0, logoSize.x);
+	}
+
+	@Override
+	public Size getGameIconSize() {
+		return logoSize;
 	}
 
 	@Override
@@ -62,14 +69,14 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	@Override
 	public void initialize() {
 		if (gameGraphics == null) {
-			gameGraphics = new BufferedImage(gameSize[0], gameSize[1], BufferedImage.TYPE_INT_ARGB);
+			gameGraphics = new BufferedImage(gameSize.x, gameSize.y, BufferedImage.TYPE_INT_ARGB);
 		}
 		if (rand == null) {
 			rand = new Random();
 		}
 		rand.setSeed("NPExceptional Seed".hashCode());
 		if (input == null) {
-			input = new boolean[KEY.values().length];
+			input = new HashMap<IArcadeGame.KEY, Boolean>();
 		}
 	}
 
@@ -78,9 +85,8 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 
 	@Override
 	public void doGameTick(List<KEY> input) {
-		Arrays.fill(this.input, false);
-		for (KEY key : input) {
-			this.input[key.id] = true;
+		for (KEY key : KEY.values()) {
+			this.input.put(key, Boolean.valueOf(input.contains(key)));
 		}
 		gameTick();
 
@@ -93,16 +99,16 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	public abstract void gameTick();
 
 	public boolean isKeyDown(KEY key) {
-		return input[key.id];
+		return input.get(key).booleanValue();
 	}
 
 	@Override
 	public int[] renderGraphics() {
-		return gameGraphics.getRGB(0, 0, gameSize[0], gameSize[1], null, 0, gameSize[0]);
+		return gameGraphics.getRGB(0, 0, gameSize.x, gameSize.y, null, 0, gameSize.x);
 	}
 
 	@Override
-	public int[] getGraphicsSize() {
+	public Size getGraphicsSize() {
 		return gameSize;
 	}
 }

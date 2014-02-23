@@ -35,7 +35,7 @@ public class StartScreenGameState extends AbstractGameState {
 
 	@Override
 	public void doTick() {
-		if (game.isKeyDown(KEY.A)) {
+		if (game.isKeyDown(KEY.RED)) {
 			game.setGameState(RunGameState.class);
 			return;
 		}

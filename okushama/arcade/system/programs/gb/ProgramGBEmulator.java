@@ -32,8 +32,7 @@ public class ProgramGBEmulator implements IProgram {
 	public int loadDelay = 20;
 	public String romTitle;
 	public OS os;
-	public int[] keyCodes = { Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT, Keyboard.KEY_Z, Keyboard.KEY_X, Keyboard.KEY_RETURN, Keyboard.KEY_RSHIFT};
-
+	public int[] keyCodes = { Keyboard.KEY_UP, Keyboard.KEY_DOWN, Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT, Keyboard.KEY_Z, Keyboard.KEY_X, Keyboard.KEY_RETURN, Keyboard.KEY_RSHIFT };
 
 	public ProgramGBEmulator(OS o, String romPath, String romName) {
 		os = o;
@@ -64,7 +63,7 @@ public class ProgramGBEmulator implements IProgram {
 	@Override
 	public BufferedImage getImage() {
 		if (gameboy != null && gameboyStarted) {
-			if(gameboyOutput == null)
+			if (gameboyOutput == null)
 			{
 				gameboyOutput = new BufferedImage(160, 144, BufferedImage.TYPE_INT_ARGB);
 			}
@@ -75,12 +74,12 @@ public class ProgramGBEmulator implements IProgram {
 		}
 		if (gameIcon == null || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().res.x, getOS().res.y, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().resX, getOS().resY);
+			g.fillRect(0, 0, getOS().res.x, getOS().res.y);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			String[] output = {
@@ -96,7 +95,7 @@ public class ProgramGBEmulator implements IProgram {
 					"Back   -  Quit Rom",
 					"",
 					"Press 'ENTER' to load",
-			"Press  'BACK' to quit" };
+					"Press  'BACK' to quit" };
 			for (int i = 0; i < output.length; i++) {
 				g.drawString(output[i], 10, 20 + (i * 16));
 			}
@@ -149,8 +148,7 @@ public class ProgramGBEmulator implements IProgram {
 	@Override
 	public void onTick() {
 		loadDelay--;
-		if (Minecraft.getMinecraft().thePlayer.username.equals(getOS().currentPlayer)) {
-		}
+		if (Minecraft.getMinecraft().thePlayer.username.equals(getOS().currentPlayer)) {}
 		else {
 			//	if (nes.runEmulation)
 			{
@@ -158,8 +156,8 @@ public class ProgramGBEmulator implements IProgram {
 				int arcadeY = ((TileEntityArcade)getOS().machine).yCoord;
 				int arcadeZ = ((TileEntityArcade)getOS().machine).zCoord;
 				float dist = (float)Minecraft.getMinecraft().thePlayer.getDistance(arcadeX, arcadeY, arcadeZ);
-				float vol = Minecraft.getMinecraft().gameSettings.musicVolume-(dist/15);
-				if(vol < 0) {
+				float vol = Minecraft.getMinecraft().gameSettings.musicVolume - (dist / 15);
+				if (vol < 0) {
 					vol = 0;
 				}
 				//SwingAudioImpl.outputvol = vol;
@@ -174,7 +172,7 @@ public class ProgramGBEmulator implements IProgram {
 
 	@Override
 	public void onKeyUp(int key) {
-		if(gameboyStarted){
+		if (gameboyStarted) {
 			if (key == keyCodes[0]) {
 				gameboy.dmgcpu.ioHandler.padUp = false;
 				gameboy.dmgcpu.triggerInterruptIfEnabled(gameboy.dmgcpu.INT_P10);
@@ -222,7 +220,7 @@ public class ProgramGBEmulator implements IProgram {
 			}
 		}
 		else {
-			if(key == Keyboard.KEY_W){
+			if (key == Keyboard.KEY_W) {
 				System.out.println("W");
 				gbScreen.setVisible(!gbScreen.isVisible());
 				System.out.println(gbScreen.isVisible());

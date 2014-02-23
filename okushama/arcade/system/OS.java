@@ -25,9 +25,7 @@ import org.lwjgl.input.Keyboard;
 
 public class OS implements IArcadeGame {
 
-	public final int resX = 256;
-	public final int resY = 224;
-	private final int[] res = { resX, resY };
+	public final Size res = new Size(256, 224);
 
 	private static OSSettings settings = OSSettings.load();
 	public static OSLogger logger = new OSLogger("okushama OS");
@@ -94,12 +92,12 @@ public class OS implements IArcadeGame {
 		}
 		//	if (gameIcon == null || imageDirty)
 		{
-			gameIcon = new BufferedImage(resX, 224, BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(res.x, res.y, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getBackground());
-			g.fillRect(0, 0, resX, 224);
+			g.fillRect(0, 0, res.x, res.y);
 			g.setColor(getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString(getTitle(), 10, 20);
@@ -137,8 +135,8 @@ public class OS implements IArcadeGame {
 	}
 
 	@Override
-	public BufferedImage getGameIcon() {
-		return getImage();
+	public int[] getGameIcon() {
+		return null;
 	}
 
 	@Override
@@ -223,11 +221,11 @@ public class OS implements IArcadeGame {
 
 	@Override
 	public int[] renderGraphics() {
-		return getImage().getRGB(0, 0, res[0], res[1], null, 0, res[0]);
+		return getImage().getRGB(0, 0, res.x, res.y, null, 0, res.x);
 	}
 
 	@Override
-	public int[] getGraphicsSize() {
+	public Size getGraphicsSize() {
 		return res;
 	}
 
@@ -285,5 +283,10 @@ public class OS implements IArcadeGame {
 				logger.log("Unregistered key! " + toProgram.getTitle() + " " + key);
 			}
 		}
+	}
+
+	@Override
+	public Size getGameIconSize() {
+		return new Size(0, 0);
 	}
 }

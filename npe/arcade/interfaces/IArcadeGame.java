@@ -1,22 +1,30 @@
 package npe.arcade.interfaces;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public interface IArcadeGame {
+
+	/**
+	 * Small class to be used as return value for methods which request a size
+	 * 
+	 * @author NPException
+	 * 
+	 */
+	public class Size {
+		public final int x, y;
+
+		public Size(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
 
 	/**
 	 * Theese are the available keys for the Arcade.
 	 * 
 	 */
 	public enum KEY {
-		UP(0), DOWN(1), LEFT(2), RIGHT(3), A(4), B(5), X(6), Y(7), L1(8), L2(9), R1(10), R2(11);
-
-		public final int id;
-
-		KEY(int id) {
-			this.id = id;
-		}
+		UP, DOWN, LEFT, RIGHT, RED, GREEN, BLUE, YELLOW;
 	}
 
 	/**
@@ -30,12 +38,21 @@ public interface IArcadeGame {
 
 	/**
 	 * Returns the game logo of some sorts. If not null, this logo will be shown in the game choose menu instead of just
-	 * the name.
+	 * the name.</br>
+	 * logo must be of the size
 	 * 
 	 * @return The logo of the game. Can be null. May get resized on the arcade screen if it is to large to fit the game
 	 *         choose menu.
 	 */
-	public BufferedImage getGameIcon();
+	public int[] getGameIcon();
+
+	/**
+	 * The size of the games logo [width, height].<br>
+	 * Must not be null.
+	 * 
+	 * @return
+	 */
+	public Size getGameIconSize();
 
 	/**
 	 * Sets a reference to the IArcadeMachine instance on which this game is running.<br>
@@ -84,7 +101,7 @@ public interface IArcadeGame {
 	 * 
 	 * @return an int array [width, height]
 	 */
-	public int[] getGraphicsSize();
+	public Size getGraphicsSize();
 
 	/**
 	 * Sets the name of the current player who's using the arcade.<br>

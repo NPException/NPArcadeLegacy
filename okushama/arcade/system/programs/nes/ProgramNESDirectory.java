@@ -52,12 +52,12 @@ public class ProgramNESDirectory implements IProgram {
 	public BufferedImage getImage() {
 		if (gameIcon == null || imageDirty || getOS().imageDirty)
 		{
-			gameIcon = new BufferedImage(getOS().resX, getOS().resY, BufferedImage.TYPE_INT_ARGB);
+			gameIcon = new BufferedImage(getOS().res.x, getOS().res.y, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().resX, getOS().resY);
+			g.fillRect(0, 0, getOS().res.x, getOS().res.y);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString("CHOOSE A ROM", 10, 20);

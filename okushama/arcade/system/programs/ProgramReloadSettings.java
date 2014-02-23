@@ -57,13 +57,13 @@ public class ProgramReloadSettings implements IProgram {
 	@Override
 	public BufferedImage getImage() {
 		if (gameIcon == null || getOS().imageDirty) {
-			gameIcon = new BufferedImage(getOS().resX, getOS().resY,
+			gameIcon = new BufferedImage(getOS().res.x, getOS().res.y,
 					BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) gameIcon.getGraphics();
+			Graphics2D g = (Graphics2D)gameIcon.getGraphics();
 			g.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
 			g.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 			g.setColor(getOS().getBackground());
-			g.fillRect(0, 0, getOS().resX, getOS().resY);
+			g.fillRect(0, 0, getOS().res.x, getOS().res.y);
 			g.setColor(getOS().getForeground());
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
 			g.drawString("RELOADED SETTINGS", 10, 20);

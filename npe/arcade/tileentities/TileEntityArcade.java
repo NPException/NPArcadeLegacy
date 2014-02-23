@@ -41,7 +41,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	private final int[] SUGGESTED_SCREEN_SIZE = { 96, 128 };
 
-	private int lastGameWidth, lastGameHeight, textureSize;
+	private int lastGameWidth, lastGameHeight, textureWidth, textureHeight;
 	private int gameOffsetX, gameOffsetY;
 
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
@@ -152,7 +152,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 					keysPressedDown.add(KEY.UP);
 				}
 				if (GameSettings.isKeyDown(settings.keyBindJump)) {
-					keysPressedDown.add(KEY.A);
+					keysPressedDown.add(KEY.RED);
 				}
 			}
 
@@ -162,8 +162,8 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 			///////////////////
 			// SCREEN UPDATE //
 			///////////////////
-			int gameResX = game.getGraphicsSize()[0];
-			int gameResY = game.getGraphicsSize()[1];
+			int gameResX = game.getGraphicsSize().x;
+			int gameResY = game.getGraphicsSize().y;
 			BufferedImage gameGraphics = new BufferedImage(gameResX, gameResY, BufferedImage.TYPE_INT_ARGB);
 			gameGraphics.setRGB(0, 0, gameResX, gameResY, game.renderGraphics(), 0, gameResX);
 			int width = gameGraphics.getWidth();
@@ -180,7 +180,7 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 			g.drawImage(gameGraphics, gameOffsetX, gameOffsetY, null);
 
 			if (screenframeImage != null) {
-				g.drawImage(screenframeImage, 0, 0, textureSize, textureSize, null);
+				g.drawImage(screenframeImage, 0, 0, textureWidth, textureHeight, null);
 			}
 
 			isImageChanged = true;
@@ -189,19 +189,21 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 
 	private void generateNewScreenTexture(int neededWidth, int neededHeight) {
 		// todo: generate texture with sizes of ^2
-		if (neededHeight > neededWidth) {
-			textureSize = neededHeight;
+		if (neededWidth < neededHeight * 0.75f) {
+			textureHeight = neededHeight;
+			textureWidth = (int)(textureHeight * 0.75f);
 		}
 		else {
-			textureSize = neededWidth;
+			textureWidth = neededWidth;
+			textureHeight = (int)(textureWidth / 0.75f);
 		}
-		screen = new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_ARGB);
+		screen = new BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB);
 
 		lastGameHeight = neededHeight;
 		lastGameWidth = neededWidth;
 
-		gameOffsetX = (neededWidth > neededHeight) ? 0 : textureSize / 2 - neededWidth / 2;
-		gameOffsetY = (neededHeight > neededWidth) ? 0 : textureSize / 2 - neededHeight / 2;
+		gameOffsetX = (neededWidth < textureWidth) ? (textureWidth / 2 - neededWidth / 2) : 0;
+		gameOffsetY = (neededHeight < textureHeight) ? (textureHeight / 2 - neededHeight / 2) : 0;
 
 		TextureUtil.allocateTexture(getGlTextureId(true), screen.getWidth(), screen.getHeight());
 	}
