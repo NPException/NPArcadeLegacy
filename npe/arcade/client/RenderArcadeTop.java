@@ -47,16 +47,6 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 
 		// SCREEN RENDERING //
 
-		// // keep this stuff here, until it is safe to say that uploading the texture outside of the render thread works.
-		//		if (arcade.textureSizeChanged || arcade.glTextureId == -1) {
-		//			TextureUtil.allocateTexture(arcade.getGlTextureId(true), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
-		//			arcade.textureSizeChanged = false;
-		//		}
-		//		if (arcade.isImageChanged) {
-		//			TextureUtil.uploadTexture(arcade.getGlTextureId(false), arcade.getScreenImageData(), arcade.getScreenImage().getWidth(), arcade.getScreenImage().getHeight());
-		//			arcade.isImageChanged = false;
-		//		}
-
 		glPushMatrix();
 		glDisable(GL_LIGHTING);
 		glRotatef(25f, -1f, 0f, 0f);
@@ -91,28 +81,6 @@ public class RenderArcadeTop extends TileEntitySpecialRenderer {
 		ty = -0.39d;
 		w = 0.752d;
 		h = 0.96d;
-		//		float r = 0f, g = 0f, b = 0f;
-		//
-		//		// broken effect test
-		//		Random rand = new Random();
-		//		int c = rand.nextInt(3);
-		//		boolean doBrokenEffect1 = false;
-		//		if (doBrokenEffect1) {
-		//			switch (c) {
-		//				case 0:
-		//					r = 1f;
-		//					break;
-		//				case 1:
-		//					g = 1f;
-		//					break;
-		//				case 2:
-		//					b = 1f;
-		//					break;
-		//			}
-		//		}
-		//		else {
-		//			r = g = b = 1f;
-		//		}
 
 		// render quad
 		tessellator.setColorRGBA_F(1f, 1f, 1f, 1F);
