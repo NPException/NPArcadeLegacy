@@ -14,86 +14,86 @@ import npe.arcade.games.AbstractArcadeGame;
 
 public class CrapRacer extends AbstractArcadeGame {
 
-    private static final String TITLE = "Crap Racer";
+	private static final String TITLE = "Crap Racer";
 
-    BufferedImage truckImage;
-    BufferedImage racecarImage;
+	BufferedImage truckImage;
+	BufferedImage racecarImage;
 
-    private AbstractGameState currentGameState;
-    private final Map<Class<? extends AbstractGameState>, AbstractGameState> availableGamestates;
+	private AbstractGameState currentGameState;
+	private final Map<Class<? extends AbstractGameState>, AbstractGameState> availableGamestates;
 
-    public CrapRacer() {
-        availableGamestates = new HashMap<Class<? extends AbstractGameState>, AbstractGameState>();
-    }
+	public CrapRacer() {
+		availableGamestates = new HashMap<Class<? extends AbstractGameState>, AbstractGameState>();
+	}
 
-    Random getRandom() {
-        return rand;
-    }
+	Random getRandom() {
+		return rand;
+	}
 
-    BufferedImage getGameGraphics() {
-        return gameGraphics;
-    }
+	BufferedImage getGameGraphics() {
+		return gameGraphics;
+	}
 
-    Color getBackgroundColor() {
-        return arcadeMachine.getScreenBackgroundColor();
-    }
+	Color getBackgroundColor() {
+		return arcadeMachine.getScreenBackgroundColor();
+	}
 
-    @Override
-    public String getTitle() {
-        return TITLE;
-    }
+	@Override
+	public String getTitle() {
+		return TITLE;
+	}
 
-    @Override
-    public void initialize() {
-        super.initialize();
+	@Override
+	public void initialize() {
+		super.initialize();
 
-        boolean ok = true;
-        try {
-            if (truckImage == null) {
-                truckImage = ImageIO.read(CrapRacer.class.getResourceAsStream("assets/truck.png"));
-            }
-            if (racecarImage == null) {
-                racecarImage = ImageIO.read(CrapRacer.class.getResourceAsStream("assets/racecar.png"));
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            ok = false;
-        }
+		boolean ok = true;
+		try {
+			if (truckImage == null) {
+				truckImage = ImageIO.read(CrapRacer.class.getResourceAsStream("assets/truck.png"));
+			}
+			if (racecarImage == null) {
+				racecarImage = ImageIO.read(CrapRacer.class.getResourceAsStream("assets/racecar.png"));
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			ok = false;
+		}
 
-        if (!ok) {
-            setGameState(ErrorGameState.class);
-        }
-        else {
-            setGameState(StartScreenGameState.class);
-        }
-    }
+		if (!ok) {
+			setGameState(ErrorGameState.class);
+		}
+		else {
+			setGameState(StartScreenGameState.class);
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    <T extends AbstractGameState> T setGameState(Class<T> clazz) {
-        try {
-            AbstractGameState state = availableGamestates.get(clazz);
-            if (state == null) {
-                state = clazz.getConstructor(CrapRacer.class).newInstance(this);
-                availableGamestates.put(clazz, state);
-            }
-            currentGameState = state;
-            currentGameState.initialize();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        return (T)currentGameState;
-    }
+	@SuppressWarnings("unchecked")
+	<T extends AbstractGameState> T setGameState(Class<T> clazz) {
+		try {
+			AbstractGameState state = availableGamestates.get(clazz);
+			if (state == null) {
+				state = clazz.getConstructor(CrapRacer.class).newInstance(this);
+				availableGamestates.put(clazz, state);
+			}
+			currentGameState = state;
+			currentGameState.initialize();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return (T)currentGameState;
+	}
 
-    @Override
-    public void gameTick() {
-        currentGameState.doTick();
-    }
+	@Override
+	public void gameTick() {
+		currentGameState.doTick();
+	}
 
-    @Override
-    public BufferedImage renderGraphics() {
-        currentGameState.doRender((Graphics2D)gameGraphics.getGraphics());
-        return super.renderGraphics();
-    }
+	@Override
+	public int[] renderGraphics() {
+		currentGameState.doRender((Graphics2D)gameGraphics.getGraphics());
+		return super.renderGraphics();
+	}
 }

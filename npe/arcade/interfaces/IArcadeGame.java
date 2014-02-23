@@ -77,7 +77,14 @@ public interface IArcadeGame {
 	 * 
 	 * @return
 	 */
-	public BufferedImage renderGraphics();
+	public int[] renderGraphics();
+
+	/**
+	 * Gets the size of the games rendered image.
+	 * 
+	 * @return an int array [width, height]
+	 */
+	public int[] getGraphicsSize();
 
 	/**
 	 * Sets the name of the current player who's using the arcade.<br>

@@ -162,7 +162,10 @@ public class TileEntityArcade extends TileEntity implements IArcadeMachine {
 			///////////////////
 			// SCREEN UPDATE //
 			///////////////////
-			BufferedImage gameGraphics = game.renderGraphics();
+			int gameResX = game.getGraphicsSize()[0];
+			int gameResY = game.getGraphicsSize()[1];
+			BufferedImage gameGraphics = new BufferedImage(gameResX, gameResY, BufferedImage.TYPE_INT_ARGB);
+			gameGraphics.setRGB(0, 0, gameResX, gameResY, game.renderGraphics(), 0, gameResX);
 			int width = gameGraphics.getWidth();
 			int height = gameGraphics.getHeight();
 

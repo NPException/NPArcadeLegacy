@@ -21,6 +21,7 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	protected String playername;
 
 	protected BufferedImage gameGraphics;
+	protected int[] gameSize = { 96, 128 };
 	protected BufferedImage gameIcon;
 
 	protected Random rand;
@@ -61,7 +62,7 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	@Override
 	public void initialize() {
 		if (gameGraphics == null) {
-			gameGraphics = new BufferedImage(96, 128, BufferedImage.TYPE_INT_ARGB);
+			gameGraphics = new BufferedImage(gameSize[0], gameSize[1], BufferedImage.TYPE_INT_ARGB);
 		}
 		if (rand == null) {
 			rand = new Random();
@@ -96,8 +97,12 @@ public abstract class AbstractArcadeGame implements IArcadeGame {
 	}
 
 	@Override
-	public BufferedImage renderGraphics() {
-		return gameGraphics;
+	public int[] renderGraphics() {
+		return gameGraphics.getRGB(0, 0, gameSize[0], gameSize[1], null, 0, gameSize[0]);
 	}
 
+	@Override
+	public int[] getGraphicsSize() {
+		return gameSize;
+	}
 }

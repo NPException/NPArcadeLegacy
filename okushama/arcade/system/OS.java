@@ -27,6 +27,7 @@ public class OS implements IArcadeGame {
 
 	public final int resX = 256;
 	public final int resY = 224;
+	private final int[] res = { resX, resY };
 
 	private static OSSettings settings = OSSettings.load();
 	public static OSLogger logger = new OSLogger("okushama OS");
@@ -221,8 +222,13 @@ public class OS implements IArcadeGame {
 	}
 
 	@Override
-	public BufferedImage renderGraphics() {
-		return getImage();
+	public int[] renderGraphics() {
+		return getImage().getRGB(0, 0, res[0], res[1], null, 0, res[0]);
+	}
+
+	@Override
+	public int[] getGraphicsSize() {
+		return res;
 	}
 
 	@Override
