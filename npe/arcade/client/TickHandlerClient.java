@@ -26,7 +26,7 @@ import cpw.mods.fml.common.TickType;
 
 public class TickHandlerClient implements ITickHandler {
 
-	public static boolean canDisablePlayerInput = true;
+	public static boolean canDisablePlayerInput = false;
 	private boolean getClientPlayerInput = false;
 	private PlayerSettingBackup playerKeys = null;
 
