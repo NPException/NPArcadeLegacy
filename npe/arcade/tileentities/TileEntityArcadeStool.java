@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import npe.arcade.entities.EntityArcadeStool;
 
 public class TileEntityArcadeStool extends TileEntity {
@@ -32,6 +33,11 @@ public class TileEntityArcadeStool extends TileEntity {
 				player.mountEntity(null);
 			}
 		}
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return AxisAlignedBB.getAABBPool().getAABB(xCoord, yCoord, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
 	}
 
 	@Override
