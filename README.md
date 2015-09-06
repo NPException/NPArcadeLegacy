@@ -1,3 +1,3 @@
-# NPArcade
+# NPArcade (Legacy)
 
-This arcade mod is being rewritten. The code of the rewrite can be found here: <https://github.com/NPException42/NPArcade>
+This arcade mod has been rewritten. The rewrite can be found here: <https://github.com/NPException42/NPArcade>
